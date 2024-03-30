@@ -3,14 +3,14 @@ import { immer } from "zustand/middleware/immer";
 import { PGlite, Results } from "@electric-sql/pglite";
 
 interface DBConnection {
-  name: string
-  postgres: PGlite
+  name: string;
+  postgres: PGlite;
 }
 
 interface DBMetadata {
   name: string;
 
-  createdAt: string;
+  createdAt?: string;
 
   description?: string;
 }
@@ -20,7 +20,9 @@ interface DBState {
 
   databases: Record<string, DBMetadata>;
 
-  create: (name: string, description?: string) => Promise<void>;
+  create: (metadata: DBMetadata) => Promise<void>;
+
+  remove: (name: string) => Promise<void>;
 
   change: (name: string) => Promise<void>;
 
@@ -33,26 +35,30 @@ export const useDBStore = create<DBState>()(
 
     databases: {},
 
-    create: async (name, description) => {
-      if (get().databases[name])
-        throw new Error(`db with name: ${name} already exists`);
+    create: async (metadata) => {
+      if (get().databases[metadata.name])
+        throw new Error(`db with name: ${metadata.name} already exists`);
 
-      const postgres = new PGlite(`idb://${name}`);
+      const postgres = new PGlite(`idb://${metadata.name}`);
 
       await postgres.waitReady;
 
       return set((state) => {
         state.active = {
-          name: name,
-          postgres: postgres
+          name: metadata.name,
+          postgres: postgres,
         };
 
-        state.databases[name] = {
-          name: name,
-          description: description,
+        state.databases[metadata.name] = {
+          name: metadata.name,
+          description: metadata.description,
           createdAt: Date.now().toLocaleString(),
         };
       });
+    },
+
+    remove: async (name) => {
+      console.log(name);
     },
 
     change: async (name) => {
@@ -63,9 +69,9 @@ export const useDBStore = create<DBState>()(
       return set((state) => {
         state.active = {
           name: name,
-          postgres: postgres
-        }
-      })
+          postgres: postgres,
+        };
+      });
     },
 
     execute: async (query) => {
