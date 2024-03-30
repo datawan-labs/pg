@@ -11,16 +11,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.1.1",
     "@fontsource-variable/jetbrains-mono": "^5.0.20",
     "@fontsource-variable/plus-jakarta-sans": "^5.0.20",
+    "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "immer": "^10.0.4",
     "lucide-react": "^0.363.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "sonner": "^1.4.41",
     "tailwind-merge": "^2.2.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "vaul": "^0.9.0",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "^20.11.30",
