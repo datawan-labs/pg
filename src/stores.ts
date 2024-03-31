@@ -2,14 +2,19 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { PGlite, Results } from "@electric-sql/pglite";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { postgreIDBConnection, postgreIDBName, removeItem, zustandStorage } from "./utils/idb";
+import {
+  removeItem,
+  postgreIDBName,
+  zustandStorage,
+  postgreIDBConnection,
+} from "./utils/idb";
 
-interface DBConnection {
+interface Connection {
   name: string;
   postgres: PGlite;
 }
 
-export interface DBMetadata {
+export interface Database {
   name: string;
 
   createdAt?: string;
@@ -17,14 +22,14 @@ export interface DBMetadata {
   description?: string;
 }
 
-interface DBState {
-  active: DBConnection | undefined;
+interface State {
+  active: Connection | undefined;
 
-  databases: Record<string, DBMetadata>;
+  databases: Record<string, Database>;
 
-  create: (metadata: DBMetadata) => Promise<void>;
+  create: (metadata: Database) => Promise<void>;
 
-  update: (name: string, metadata: Omit<DBMetadata, "name">) => Promise<void>;
+  update: (name: string, metadata: Omit<Database, "name">) => Promise<void>;
 
   remove: (name: string) => Promise<void>;
 
@@ -33,7 +38,7 @@ interface DBState {
   execute: (query: string) => Promise<Results[]>;
 }
 
-export const useDBStore = create<DBState>()(
+export const useDBStore = create<State>()(
   persist(
     immer((set, get) => ({
       active: undefined,
@@ -76,8 +81,7 @@ export const useDBStore = create<DBState>()(
           delete state.databases[name];
         });
 
-        removeItem(postgreIDBName(name))
-
+        removeItem(postgreIDBName(name));
       },
 
       connect: async (name) => {

@@ -23,7 +23,7 @@ export const HeaderTitle: FC<ComponentProps<"h1">> = ({
   children,
   ...props
 }) => (
-  <h1 className={cn("px-4 text-xl font-semibold", className)} {...props}>
+  <h1 className={cn("px-2 text-xl font-semibold", className)} {...props}>
     {children}
   </h1>
 );

@@ -3,27 +3,29 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { modal } from "@/components/ui/modals";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layouts/container";
-import { QueryLogs } from "./components/interfaces/query-logs";
-import { SchemaERD } from "./components/interfaces/schema-erd";
+import { QueryLogs } from "@/components/interfaces/query-logs";
+import { SchemaERD } from "@/components/interfaces/schema-erd";
+import { useDarkMode } from "./components/hooks/use-dark-mode";
+import { useIsDesktop } from "./components/hooks/use-is-desktop";
 import { QueryPlayground } from "@/components/interfaces/query-playground";
 import { Navigation, NavigationItem } from "@/components/layouts/navigation";
 import { Header, HeaderLogo, HeaderTitle } from "@/components/layouts/header";
 import { DatabaseList } from "@/components/interfaces/database-setup/database-list";
 import {
-  DESKTOP_BREAKPOINT,
-  useMediaQuery,
-} from "@/components/hooks/use-media-query";
-import {
   IconLogs,
   IconDatabase,
   IconHierarchy2,
   IconTableColumn,
+  IconSun,
+  IconMoon,
 } from "@tabler/icons-react";
 
 const App = () => {
-  const isDesktop = useMediaQuery(DESKTOP_BREAKPOINT);
+  const isDesktop = useIsDesktop();
 
   const [active, setActive] = useState("playground");
+
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   return (
     <Container>
@@ -31,6 +33,18 @@ const App = () => {
         <HeaderLogo />
         <HeaderTitle className="capitalize">{active}</HeaderTitle>
         <div className="ml-auto mr-2 flex flex-row items-center justify-center gap-1.5 ">
+          <Button
+            size="icon"
+            className="size-8"
+            variant="ghost"
+            onClick={toggleDarkMode}
+          >
+            {isDarkMode ? (
+              <IconSun className="size-4" />
+            ) : (
+              <IconMoon className="size-4" />
+            )}
+          </Button>
           <Button
             size="sm"
             variant="outline"
@@ -77,7 +91,7 @@ const App = () => {
             </Tabs.Trigger>
           </Navigation>
         </Tabs.List>
-        <main className="flex-1 overflow-auto p-2">
+        <main className="flex flex-1 flex-col overflow-auto">
           <Tabs.Content value="playground" asChild>
             <QueryPlayground />
           </Tabs.Content>

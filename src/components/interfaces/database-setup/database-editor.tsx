@@ -3,9 +3,9 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
 import { modal } from "@/components/ui/modals";
 import { Button } from "@/components/ui/button";
-import { DBMetadata, useDBStore } from "@/store";
 import { IconLoader } from "@tabler/icons-react";
 import { Textarea } from "@/components/ui/textarea";
+import { Database, useDBStore } from "@/stores";
 import { useFormState } from "@/components/hooks/use-form-state";
 import {
   FormField,
@@ -14,8 +14,8 @@ import {
   FormFieldset,
 } from "@/components/ui/form";
 
-export const DatabaseEditor: FC<{ database: DBMetadata }> = ({ database }) => {
-  const form = useFormState<Omit<DBMetadata, "name">>(database);
+export const DatabaseEditor: FC<{ database: Database }> = ({ database }) => {
+  const form = useFormState<Omit<Database, "name">>(database);
 
   const create = () =>
     form.submit(async (data) => {

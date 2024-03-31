@@ -1,10 +1,7 @@
 import { cn } from "@/utils/classnames";
 import { ComponentProps, forwardRef } from "react";
 import { Button, ButtonProps } from "@/components/ui/button";
-import {
-  useMediaQuery,
-  DESKTOP_BREAKPOINT,
-} from "@/components/hooks/use-media-query";
+import { useIsDesktop } from "@/components/hooks/use-is-desktop";
 import {
   Tooltip,
   TooltipContent,
@@ -28,7 +25,7 @@ export const NavigationItem = forwardRef<
   HTMLButtonElement,
   ButtonProps & { tooltip: string; active?: boolean }
 >(({ tooltip, className, active, ...props }, ref) => {
-  const isDesktop = useMediaQuery(DESKTOP_BREAKPOINT);
+  const isDesktop = useIsDesktop();
 
   return (
     <Tooltip>

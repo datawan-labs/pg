@@ -1,7 +1,7 @@
 import { ComponentProps, FC } from "react";
 import { modal } from "@/components/ui/modals";
 import { Button } from "@/components/ui/button";
-import { DBMetadata, useDBStore } from "@/store";
+import { Database, useDBStore } from "@/stores";
 import { DatabaseCreator } from "./database-creator";
 import { IconCircleCheckFilled, IconDotsVertical } from "@tabler/icons-react";
 import {
@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DatabaseEditor } from "./database-editor";
 
-const DatabaseListItem: FC<{ database: DBMetadata }> = ({ database }) => {
+const DatabaseListItem: FC<{ database: Database }> = ({ database }) => {
   const active = useDBStore((state) => state.active);
 
   const connectToDatabase: ComponentProps<"button">["onClick"] = (e) => {

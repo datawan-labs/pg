@@ -1,10 +1,7 @@
 import { create } from "zustand";
 import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  useMediaQuery,
-  DESKTOP_BREAKPOINT,
-} from "@/components/hooks/use-media-query";
+import { useIsDesktop } from "@/components/hooks/use-is-desktop";
 import {
   Dialog,
   DialogSize,
@@ -158,7 +155,7 @@ export const modal = {
  * modals components
  */
 export const Modals = () => {
-  const isDesktop = useMediaQuery(DESKTOP_BREAKPOINT);
+  const isDesktop = useIsDesktop();
 
   const isOpen = useModalStore((state) => state.isOpen);
 
