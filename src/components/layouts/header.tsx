@@ -13,7 +13,7 @@ export const Header: FC<ComponentProps<"div">> = ({ className, ...props }) => (
 );
 
 export const HeaderLogo = () => (
-  <div className="flex size-12 items-center justify-center border-r">
+  <div className="hidden size-12 items-center justify-center border-r md:flex">
     <IconSquare className="size-5 fill-foreground" />
   </div>
 );

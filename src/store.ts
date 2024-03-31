@@ -1,13 +1,15 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { PGlite, Results } from "@electric-sql/pglite";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { postgreIDBConnection, postgreIDBName, removeItem, zustandStorage } from "./utils/idb";
 
 interface DBConnection {
   name: string;
   postgres: PGlite;
 }
 
-interface DBMetadata {
+export interface DBMetadata {
   name: string;
 
   createdAt?: string;
@@ -22,66 +24,89 @@ interface DBState {
 
   create: (metadata: DBMetadata) => Promise<void>;
 
+  update: (name: string, metadata: Omit<DBMetadata, "name">) => Promise<void>;
+
   remove: (name: string) => Promise<void>;
 
-  change: (name: string) => Promise<void>;
+  connect: (name: string) => Promise<void>;
 
   execute: (query: string) => Promise<Results[]>;
 }
 
 export const useDBStore = create<DBState>()(
-  immer((set, get) => ({
-    active: undefined,
+  persist(
+    immer((set, get) => ({
+      active: undefined,
 
-    databases: {},
+      databases: {},
 
-    create: async (metadata) => {
-      if (get().databases[metadata.name])
-        throw new Error(`db with name: ${metadata.name} already exists`);
+      create: async (metadata) => {
+        if (get().databases[metadata.name])
+          throw new Error(`db with name: ${metadata.name} already exists`);
 
-      const postgres = new PGlite(`idb://${metadata.name}`);
+        const postgres = new PGlite(postgreIDBConnection(metadata.name));
 
-      await postgres.waitReady;
+        await postgres.waitReady;
 
-      return set((state) => {
-        state.active = {
-          name: metadata.name,
-          postgres: postgres,
-        };
+        return set((state) => {
+          state.active = {
+            name: metadata.name,
+            postgres: postgres,
+          };
 
-        state.databases[metadata.name] = {
-          name: metadata.name,
-          description: metadata.description,
-          createdAt: Date.now().toLocaleString(),
-        };
-      });
-    },
+          state.databases[metadata.name] = {
+            name: metadata.name,
+            description: metadata.description,
+            createdAt: new Date().toLocaleString(),
+          };
+        });
+      },
 
-    remove: async (name) => {
-      console.log(name);
-    },
+      update: async (name, metadata) =>
+        set((state) => {
+          state.databases[name].description = metadata.description;
 
-    change: async (name) => {
-      const postgres = new PGlite(`idb://${name}`);
+          state.databases[name].createdAt = new Date().toLocaleString();
+        }),
 
-      await postgres.waitReady;
+      remove: async (name) => {
+        set((state) => {
+          state.active = undefined;
 
-      return set((state) => {
-        state.active = {
-          name: name,
-          postgres: postgres,
-        };
-      });
-    },
+          delete state.databases[name];
+        });
 
-    execute: async (query) => {
-      const connection = get().active;
+        removeItem(postgreIDBName(name))
 
-      if (!connection) throw new Error(`no active connection`);
+      },
 
-      if (!query || !query.trim()) throw new Error(`no query to run`);
+      connect: async (name) => {
+        const postgres = new PGlite(postgreIDBConnection(name));
 
-      return connection.postgres.exec(query);
-    },
-  }))
+        await postgres.waitReady;
+
+        return set((state) => {
+          state.active = {
+            name: name,
+            postgres: postgres,
+          };
+        });
+      },
+
+      execute: async (query) => {
+        const connection = get().active;
+
+        if (!connection) throw new Error(`no active connection`);
+
+        if (!query || !query.trim()) throw new Error(`no query to run`);
+
+        return connection.postgres.exec(query);
+      },
+    })),
+    {
+      name: "zustand-store",
+      storage: createJSONStorage(() => zustandStorage),
+      partialize: (state) => ({ databases: state.databases }),
+    }
+  )
 );

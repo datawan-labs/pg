@@ -1,7 +1,10 @@
 import { create } from "zustand";
 import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { useMediaQuery } from "@/components/hooks/use-media-query";
+import {
+  useMediaQuery,
+  DESKTOP_BREAKPOINT,
+} from "@/components/hooks/use-media-query";
 import {
   Dialog,
   DialogSize,
@@ -155,7 +158,7 @@ export const modal = {
  * modals components
  */
 export const Modals = () => {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery(DESKTOP_BREAKPOINT);
 
   const isOpen = useModalStore((state) => state.isOpen);
 
@@ -200,10 +203,16 @@ export const Modals = () => {
           activeModal?.type === "CONFIRM_MODAL" && e.preventDefault()
         }
       >
-        <DialogHeader>
-          <DialogTitle>{activeModal?.title}</DialogTitle>
-          <DialogDescription>{activeModal?.description}</DialogDescription>
-        </DialogHeader>
+        {(activeModal?.title || activeModal?.description) && (
+          <DialogHeader>
+            {activeModal.title && (
+              <DialogTitle>{activeModal.title}</DialogTitle>
+            )}
+            {activeModal.description && (
+              <DialogDescription>{activeModal.description}</DialogDescription>
+            )}
+          </DialogHeader>
+        )}
         <div className="overflow-auto">{activeModal?.children}</div>
         {activeModal?.type === "CONFIRM_MODAL" && (
           <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
@@ -231,11 +240,17 @@ export const Modals = () => {
       }
     >
       <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>{activeModal?.title}</DrawerTitle>
-          <DrawerDescription>{activeModal?.description}</DrawerDescription>
-        </DrawerHeader>
-        <div className="overflow-auto py-4">{activeModal?.children}</div>
+        {(activeModal?.title || activeModal?.description) && (
+          <DrawerHeader>
+            {activeModal.title && (
+              <DrawerTitle>{activeModal?.title}</DrawerTitle>
+            )}
+            {activeModal.description && (
+              <DrawerDescription>{activeModal?.description}</DrawerDescription>
+            )}
+          </DrawerHeader>
+        )}
+        <div className="overflow-auto">{activeModal?.children}</div>
         {activeModal?.type === "CONFIRM_MODAL" && (
           <DrawerFooter className="pt-2">
             <Button onClick={onConfirm}>
