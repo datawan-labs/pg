@@ -112,7 +112,7 @@ const App = () => {
           <div className="flex flex-1 flex-col items-center justify-center gap-2 p-2 text-center">
             <h2 className="text-lg font-bold">No database</h2>
             <p className="text-xs text-muted-foreground">
-              You can start playing as soon as you add a database.
+              You can start playing as soon as you connect a database.
             </p>
             <Button
               size="sm"

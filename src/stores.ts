@@ -9,6 +9,8 @@ import {
   postgreIDBConnection,
 } from "./utils/idb";
 import { getDatabaseSchema } from "./services/postgre";
+import { Cell, DataGridValue } from "./components/ui/data-viewer";
+import { postgresTransformer } from "./utils/postgres";
 
 interface Connection {
   name: string;
@@ -30,11 +32,19 @@ export interface QueryHistory {
 
 export type TableType = "BASE TABLE" | "VIEW";
 
+export type TableColumn = {
+  type: string;
+  column: string;
+  nullable: boolean;
+  length: string | null;
+};
+
 export interface DatabaseSchema {
   schema: string;
   tables: {
     table: string;
     type: TableType;
+    columns: TableColumn[];
   }[];
 }
 
@@ -48,6 +58,10 @@ export interface Database {
   history: QueryHistory[];
 
   schema: DatabaseSchema[];
+
+  query?: string;
+
+  datagrid?: DataGridValue<Cell>[];
 }
 
 interface State {
@@ -64,6 +78,8 @@ interface State {
   connect: (name: string) => Promise<void>;
 
   execute: (query: string) => Promise<Results[] | undefined>;
+
+  reload: () => Promise<void>;
 }
 
 export const useDBStore = create<State>()(
@@ -141,6 +157,11 @@ export const useDBStore = create<State>()(
           const result = await connection.postgres.exec(query);
 
           set((state) => {
+            state.databases[connection.name].query = query;
+
+            state.databases[connection.name].datagrid =
+              postgresTransformer(result);
+
             state.databases[connection.name].history.push({
               statement: query,
               createdAt: createdAt,
@@ -155,6 +176,10 @@ export const useDBStore = create<State>()(
           return result;
         } catch (error) {
           set((state) => {
+            state.databases[connection.name].query = query;
+
+            state.databases[connection.name].datagrid = [];
+
             state.databases[connection.name].history.push({
               statement: query,
               createdAt: createdAt,
@@ -163,8 +188,18 @@ export const useDBStore = create<State>()(
             });
           });
 
-          throw error
+          throw error;
         }
+      },
+
+      reload: async () => {
+        const connection = get().active!;
+
+        const schema = await getDatabaseSchema(connection.postgres);
+
+        set((state) => {
+          state.databases[connection.name].schema = schema;
+        });
       },
     })),
     {

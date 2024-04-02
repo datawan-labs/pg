@@ -2,15 +2,13 @@ import { useDBStore } from "@/stores";
 import { DataViewer } from "./viewer";
 import { cn } from "@/utils/classnames";
 import { DatabaseSchema } from "./schema";
-import { postgresTransformer } from "./utils";
 import { toast } from "@/components/ui/sonner";
 import { modal } from "@/components/ui/modals";
 import { OnMount } from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
+import { forwardRef, ComponentProps, useRef } from "react";
 import { useIsDesktop } from "@/components/hooks/use-is-desktop";
-import { Cell, DataGridValue } from "@/components/ui/data-viewer";
-import { useState, forwardRef, ComponentProps, useRef } from "react";
 import {
   IconDotsVertical,
   IconPlayerPlay,
@@ -21,7 +19,6 @@ import {
   ResizableHandle,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,32 +30,25 @@ export const QueryPlayground = forwardRef<
   HTMLDivElement,
   ComponentProps<"div">
 >(({ className, ...props }, ref) => {
-  const editor = useRef<Parameters<OnMount>["0"]>();
-
   const isDesktop = useIsDesktop();
 
-  const history = useDBStore((s) => s.databases[s.active!.name]?.history) || [];
+  const editor = useRef<Parameters<OnMount>["0"]>();
 
-  const lastQuery = history[history.length - 1]?.statement;
+  const query = useDBStore((s) => s.databases[s.active!.name].query);
 
-  const [query, setQuery] = useState<string | undefined>(lastQuery);
+  const datagrid = useDBStore((s) => s.databases[s.active!.name].datagrid);
 
-  const [result, setResult] = useState<DataGridValue<Cell>[]>();
+  const setQuery = (query: string | undefined) => useDBStore.setState((s) => {
+    s.databases[s.active!.name].query = query;
+  });
 
   const run = () =>
     query &&
     useDBStore
       .getState()
       .execute(query)
-      .then((results) => {
-        results
-          ? setResult(postgresTransformer(results))
-          : setResult(undefined);
-      })
-      .catch((err) => {
-        toast.error((err as Error).message);
-        setResult([]);
-      });
+      .then(() => toast.success("completed"))
+      .catch((err) => toast.error((err as Error).message));
 
   const runSelection = () => {
     if (!editor.current) return;
@@ -75,15 +65,8 @@ export const QueryPlayground = forwardRef<
     useDBStore
       .getState()
       .execute(query)
-      .then((results) => {
-        results
-          ? setResult(postgresTransformer(results))
-          : setResult(undefined);
-      })
-      .catch((err) => {
-        toast.error((err as Error).message);
-        setResult([]);
-      });
+      .then(() => toast.success("completed"))
+      .catch((err) => toast.error((err as Error).message));
   };
 
   return (
@@ -154,25 +137,24 @@ export const QueryPlayground = forwardRef<
                 <CodeEditor
                   value={query}
                   language="pgsql"
-                  className="border md:border-0"
-                  options={{
-                    folding: isDesktop,
-                    lineNumbers: isDesktop ? "on" : "off",
-                    // lineNumbers:
-                  }}
                   onChange={setQuery}
+                  className="border md:border-0"
                   defaultLanguage="pgsql"
                   onMount={(_editor) => {
                     editor.current = _editor;
                   }}
+                  options={{
+                    folding: isDesktop,
+                    lineNumbers: isDesktop ? "on" : "off",
+                  }}
                 />
               </div>
             </ResizablePanel>
-            {result && (
+            {datagrid && (
               <>
                 <ResizableHandle withHandle direction="vertical" />
                 <ResizablePanel id="data-viewer" className="flex">
-                  <DataViewer data={result} />
+                  <DataViewer data={datagrid} />
                 </ResizablePanel>
               </>
             )}

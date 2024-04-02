@@ -10,13 +10,29 @@ export const getDatabaseSchema = async (
     table_name: string;
     table_type: TableType;
     table_schema: string;
+    table_columns: {
+      type: string;
+      column: string;
+      length: string | null;
+      nullable: "YES" | "NO";
+    }[];
   }>(`
     SELECT
-      table_schema,
-      table_name,
-      table_type
+      t.table_schema,
+      t.table_type,
+      t.table_name,
+      json_agg(json_build_object('column', c.column_name, 
+                                'type', c.data_type,
+                                'length', c.character_maximum_length,
+                                'nullable', c.is_nullable)) AS table_columns
     FROM 
-      information_schema.tables;
+      information_schema.tables t
+    JOIN 
+      information_schema.columns c ON t.table_name = c.table_name
+    GROUP BY 
+      t.table_schema, 
+      t.table_name,
+      t.table_type;
   `);
   console.timeEnd("time");
 
@@ -24,7 +40,7 @@ export const getDatabaseSchema = async (
 
   // Iterate over the Res objects
   result.rows.forEach((entry) => {
-    const { table_schema, table_name, table_type } = entry;
+    const { table_schema, table_name, table_type, table_columns } = entry;
 
     if (!schema.has(table_schema))
       schema.set(table_schema, {
@@ -35,6 +51,12 @@ export const getDatabaseSchema = async (
     schema.get(table_schema).tables.push({
       table: table_name,
       type: table_type,
+      columns: table_columns.map((c) => ({
+        type: c.type,
+        column: c.column,
+        length: c.length,
+        nullable: c.nullable === "YES",
+      })),
     });
   });
 

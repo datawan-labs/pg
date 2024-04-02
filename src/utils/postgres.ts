@@ -18,10 +18,10 @@ const columnTransformer: Record<number, ColumnType> = {
   [types.FLOAT8]: "number",
 };
 
-// const valueTransformer: Record
-
-export const postgresTransformer = (results: Results[]): DataGridValue<Cell>[] =>
-  results
+export const postgresTransformer = (
+  results: Results[]
+): DataGridValue<Cell>[] => {
+  return results
     .filter((result) => result.rows !== undefined)
     .map((result) => {
       const column = result.fields.reduce((prev, curr) => {
@@ -51,3 +51,4 @@ export const postgresTransformer = (results: Results[]): DataGridValue<Cell>[] =
 
       return { column, data };
     });
+};
