@@ -30,12 +30,11 @@ export const DatabaseEditor: FC<{ database: Database }> = ({ database }) => {
     <FormFieldset title="Database Metadata">
       <FormField>
         <FormLabel htmlFor="name">Name</FormLabel>
-        <Input disabled value="name" name="name" value={database.name} />
+        <Input disabled name="name" value={database.name} />
       </FormField>
       <FormField>
         <FormLabel htmlFor="description">Description</FormLabel>
         <Textarea
-          value="description"
           name="description"
           value={form.data?.description}
           placeholder="This database is a..."

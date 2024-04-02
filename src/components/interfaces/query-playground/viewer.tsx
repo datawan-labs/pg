@@ -32,7 +32,8 @@ export const DataViewer = forwardRef<HTMLDivElement, DataViewerProps>(
     const lastHistory = history ? history[history.length - 1] : undefined;
 
     useEffect(() => {
-      if (active >= data.length) setActive(data.length - 1);
+      if (active >= data.length)
+        setActive(data.length > 0 ? data.length - 1 : 0);
     }, [active, data.length]);
 
     return (

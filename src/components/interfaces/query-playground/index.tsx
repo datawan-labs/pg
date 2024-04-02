@@ -5,25 +5,43 @@ import { DatabaseSchema } from "./schema";
 import { postgresTransformer } from "./utils";
 import { toast } from "@/components/ui/sonner";
 import { modal } from "@/components/ui/modals";
+import { OnMount } from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
-import { useState, forwardRef, ComponentProps } from "react";
 import { useIsDesktop } from "@/components/hooks/use-is-desktop";
 import { Cell, DataGridValue } from "@/components/ui/data-viewer";
-import { IconPlayerPlay, IconTableColumn } from "@tabler/icons-react";
+import { useState, forwardRef, ComponentProps, useRef } from "react";
+import {
+  IconDotsVertical,
+  IconPlayerPlay,
+  IconTableColumn,
+} from "@tabler/icons-react";
 import {
   ResizablePanel,
   ResizableHandle,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 export const QueryPlayground = forwardRef<
   HTMLDivElement,
   ComponentProps<"div">
 >(({ className, ...props }, ref) => {
+  const editor = useRef<Parameters<OnMount>["0"]>();
+
   const isDesktop = useIsDesktop();
 
-  const [query, setQuery] = useState<string>();
+  const history = useDBStore((s) => s.databases[s.active!.name]?.history) || [];
+
+  const lastQuery = history[history.length - 1]?.statement;
+
+  const [query, setQuery] = useState<string | undefined>(lastQuery);
 
   const [result, setResult] = useState<DataGridValue<Cell>[]>();
 
@@ -32,19 +50,47 @@ export const QueryPlayground = forwardRef<
     useDBStore
       .getState()
       .execute(query)
-      .then((results) =>
-        results ? setResult(postgresTransformer(results)) : setResult(undefined)
-      )
+      .then((results) => {
+        results
+          ? setResult(postgresTransformer(results))
+          : setResult(undefined);
+      })
       .catch((err) => {
         toast.error((err as Error).message);
         setResult([]);
       });
 
+  const runSelection = () => {
+    if (!editor.current) return;
+
+    const selection = editor.current.getSelection();
+
+    if (!selection) return toast.error("nothing to run");
+
+    const query = editor.current.getModel()?.getValueInRange(selection);
+
+    if (!query || query.trim().length === 0)
+      return toast.error("nothing to run");
+
+    useDBStore
+      .getState()
+      .execute(query)
+      .then((results) => {
+        results
+          ? setResult(postgresTransformer(results))
+          : setResult(undefined);
+      })
+      .catch((err) => {
+        toast.error((err as Error).message);
+        setResult([]);
+      });
+  };
+
   return (
     <div
       ref={ref}
-      className={cn("flex flex-1 flex-col size-full p-0", className)}
       {...props}
+      className={cn("flex flex-1 flex-col size-full p-0", className)}
     >
       <ResizablePanelGroup
         direction="horizontal"
@@ -68,7 +114,7 @@ export const QueryPlayground = forwardRef<
                     <Button
                       size="xs"
                       variant="outline"
-                      className="gap-2 text-xs"
+                      className="gap-1 text-xs"
                       onClick={() =>
                         modal.open({ children: <DatabaseSchema /> })
                       }
@@ -77,15 +123,33 @@ export const QueryPlayground = forwardRef<
                       <span>Table</span>
                     </Button>
                   )}
-                  <Button
-                    size="xs"
-                    onClick={run}
-                    disabled={query == undefined || query.trim().length === 0}
-                    className="bottom-2 right-4 z-50 gap-2 text-xs md:absolute"
-                  >
-                    <span>Run</span>
-                    <IconPlayerPlay className="size-4" />
-                  </Button>
+                  <div className="bottom-2 right-4 z-50 flex items-center gap-0.5 md:absolute">
+                    <Button
+                      size="xs"
+                      onClick={run}
+                      className="gap-1 rounded-r-none text-xs"
+                      disabled={query == undefined || query.trim().length === 0}
+                    >
+                      <span>Run</span>
+                      <IconPlayerPlay className="size-4" />
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="icon"
+                          className="size-7 rounded-l-none"
+                          disabled={query == undefined || !query.trim().length}
+                        >
+                          <IconDotsVertical className="size-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={runSelection}>
+                          Run Selection
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
                 <CodeEditor
                   value={query}
@@ -98,6 +162,9 @@ export const QueryPlayground = forwardRef<
                   }}
                   onChange={setQuery}
                   defaultLanguage="pgsql"
+                  onMount={(_editor) => {
+                    editor.current = _editor;
+                  }}
                 />
               </div>
             </ResizablePanel>
