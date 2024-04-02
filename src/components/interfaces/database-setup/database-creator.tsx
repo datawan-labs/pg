@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 
 export const DatabaseCreator = () => {
-  const form = useFormState<Database>({
+  const form = useFormState<Pick<Database, "name" | "description">>({
     name: "",
     description: "",
   });
@@ -40,7 +40,6 @@ export const DatabaseCreator = () => {
       <FormField>
         <FormLabel htmlFor="name">Name</FormLabel>
         <Input
-          id="name"
           name="name"
           value={form.data?.name}
           placeholder="database name, must be unique"
@@ -51,7 +50,6 @@ export const DatabaseCreator = () => {
       <FormField>
         <FormLabel htmlFor="description">Description</FormLabel>
         <Textarea
-          id="description"
           name="description"
           value={form.data?.description}
           placeholder="This database is a..."
@@ -60,7 +58,7 @@ export const DatabaseCreator = () => {
         <FormError>{form.errors?.description}</FormError>
       </FormField>
       <p className="text-xs text-muted-foreground">
-        This is client side apps (no server or login required), and all
+        This app is client side apps (no server or login required), and all
         processing is done in the browser and persistent data saved in
         indexedDB, so your data stays private.
       </p>

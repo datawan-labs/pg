@@ -2,6 +2,7 @@ import { ComponentProps, FC } from "react";
 import { modal } from "@/components/ui/modals";
 import { Button } from "@/components/ui/button";
 import { Database, useDBStore } from "@/stores";
+import { DatabaseEditor } from "./database-editor";
 import { DatabaseCreator } from "./database-creator";
 import { IconCircleCheckFilled, IconDotsVertical } from "@tabler/icons-react";
 import {
@@ -17,7 +18,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
-import { DatabaseEditor } from "./database-editor";
 
 const DatabaseListItem: FC<{ database: Database }> = ({ database }) => {
   const active = useDBStore((state) => state.active);

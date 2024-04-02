@@ -1,29 +1,21 @@
 import { useDBStore } from "@/stores";
+import { DataViewer } from "./viewer";
 import { cn } from "@/utils/classnames";
-import { Results } from "@electric-sql/pglite";
+import { DatabaseSchema } from "./schema";
+import { postgresTransformer } from "./utils";
+import { toast } from "@/components/ui/sonner";
 import { modal } from "@/components/ui/modals";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { DataViewer } from "@/components/ui/data-viewer";
-import { ComponentProps, forwardRef, useState } from "react";
+import { CodeEditor } from "@/components/ui/code-editor";
+import { useState, forwardRef, ComponentProps } from "react";
 import { useIsDesktop } from "@/components/hooks/use-is-desktop";
+import { Cell, DataGridValue } from "@/components/ui/data-viewer";
 import { IconPlayerPlay, IconTableColumn } from "@tabler/icons-react";
 import {
-  ResizableHandle,
   ResizablePanel,
+  ResizableHandle,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-
-const DatabaseSchema = () => {
-  return (
-    <div className="p-2">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam, inventore
-      assumenda iusto, consequatur tenetur illum asperiores repellat laudantium
-      rem magnam modi molestias cum doloremque ipsam quasi ratione, suscipit
-      ducimus reiciendis!
-    </div>
-  );
-};
 
 export const QueryPlayground = forwardRef<
   HTMLDivElement,
@@ -33,42 +25,35 @@ export const QueryPlayground = forwardRef<
 
   const [query, setQuery] = useState<string>();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [result, setResult] = useState<any>();
+  const [result, setResult] = useState<DataGridValue<Cell>[]>();
 
-  const run = async () => {
-    try {
-      if (query) {
-        setResult(
-          transformResult((await useDBStore.getState().execute(query))[0])
-        );
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const transformResult = (result: Results) => {
-    const column = result.fields.reduce(
-      (prev, curr) => ({ ...prev, [curr.name]: "string" }),
-      {}
-    );
-
-    const data = result.rows;
-
-    return { column, data };
-  };
+  const run = () =>
+    query &&
+    useDBStore
+      .getState()
+      .execute(query)
+      .then((results) =>
+        results ? setResult(postgresTransformer(results)) : setResult(undefined)
+      )
+      .catch((err) => {
+        toast.error((err as Error).message);
+        setResult([]);
+      });
 
   return (
     <div
       ref={ref}
-      className={cn("flex flex-1 flex-col size-full p-2 md:p-0", className)}
+      className={cn("flex flex-1 flex-col size-full p-0", className)}
       {...props}
     >
-      <ResizablePanelGroup direction="horizontal" className="h-full flex-1">
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="h-full flex-1"
+        autoSaveId="playground-layout"
+      >
         {isDesktop && (
           <>
-            <ResizablePanel defaultSize={20} order={1}>
+            <ResizablePanel id="database-schema" defaultSize={20} order={1}>
               <DatabaseSchema />
             </ResizablePanel>
             <ResizableHandle withHandle direction="vertical" />
@@ -76,8 +61,8 @@ export const QueryPlayground = forwardRef<
         )}
         <ResizablePanel order={2}>
           <ResizablePanelGroup direction="vertical">
-            <ResizablePanel className="flex">
-              <div className="relative flex w-full flex-col gap-y-2 md:block md:gap-y-0">
+            <ResizablePanel id="query-editor" className="flex">
+              <div className="relative flex w-full flex-col gap-y-2 p-2 md:block md:gap-y-0 md:p-0">
                 <div className="flex items-center justify-between gap-2">
                   {!isDesktop && (
                     <Button
@@ -85,9 +70,7 @@ export const QueryPlayground = forwardRef<
                       variant="outline"
                       className="gap-2 text-xs"
                       onClick={() =>
-                        modal.open({
-                          children: <DatabaseSchema />,
-                        })
+                        modal.open({ children: <DatabaseSchema /> })
                       }
                     >
                       <IconTableColumn className="size-4" />
@@ -97,25 +80,32 @@ export const QueryPlayground = forwardRef<
                   <Button
                     size="xs"
                     onClick={run}
-                    className="right-2 top-2 gap-2 text-xs md:absolute"
+                    disabled={query == undefined || query.trim().length === 0}
+                    className="bottom-2 right-4 z-50 gap-2 text-xs md:absolute"
                   >
                     <span>Run</span>
                     <IconPlayerPlay className="size-4" />
                   </Button>
                 </div>
-                <Textarea
-                  className="h-full"
-                  onChange={(e) => setQuery(e.target.value)}
+                <CodeEditor
+                  value={query}
+                  language="pgsql"
+                  className="border md:border-0"
+                  options={{
+                    folding: isDesktop,
+                    lineNumbers: isDesktop ? "on" : "off",
+                    // lineNumbers:
+                  }}
+                  onChange={setQuery}
+                  defaultLanguage="pgsql"
                 />
               </div>
             </ResizablePanel>
             {result && (
               <>
                 <ResizableHandle withHandle direction="vertical" />
-                <ResizablePanel className="flex">
-                  <div className="flex flex-1">
-                    <DataViewer column={result.column} data={result.data} />
-                  </div>
+                <ResizablePanel id="data-viewer" className="flex">
+                  <DataViewer data={result} />
                 </ResizablePanel>
               </>
             )}

@@ -11,13 +11,15 @@ import DataEditor, {
   GridColumnIcon,
 } from "@glideapps/glide-data-grid";
 
-export type CellValue = string | number | undefined;
+export type CellValue = string | number | undefined | null;
 
 export type Cell = Record<string, CellValue>;
 
 export type ColumnType = "string" | "number" | "id";
 
 export type Column<T extends Cell> = Record<keyof T, ColumnType>;
+
+export type DataGridValue<T extends Cell> = { data: T[]; column: Column<T> };
 
 /**
  * we only use these 3 column icon, for this use case
@@ -44,7 +46,15 @@ const createGridColumns = <T extends Cell>(column: Column<T>): GridColumn[] =>
  * creating cells based on it's column type
  */
 const createCell = (type: ColumnType, value: CellValue = ""): GridCell => {
-  value = value || "";
+  if (value === null)
+    return {
+      data: "NULL",
+      style: "faded",
+      readonly: true,
+      allowOverlay: false,
+      kind: GridCellKind.RowID,
+    };
+
   switch (type) {
     case "id":
       return {
@@ -161,7 +171,7 @@ export const DataViewer = <T extends Cell>({
         className={"size-full flex-1"}
         onColumnResize={onColumnResize}
       />
-      <div id="portal" className="fixed inset-x-0 top-0 z-[999]" />
+      <div value="portal" className="fixed inset-x-0 top-0 z-[999]" />
     </div>
   );
 };

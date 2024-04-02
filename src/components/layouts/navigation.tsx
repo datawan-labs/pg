@@ -13,7 +13,7 @@ export const Navigation = forwardRef<HTMLDivElement, ComponentProps<"nav">>(
     <nav
       ref={ref}
       className={cn(
-        "flex w-full md:w-12 flex-row md:flex-col items-center justify-evenly md:justify-start gap-1 border-r py-2",
+        "flex w-full md:w-12 flex-row md:flex-col items-center justify-evenly md:justify-start gap-1 border-t md:border-t-0 md:border-r py-0.5 md:py-2",
         className
       )}
       {...props}

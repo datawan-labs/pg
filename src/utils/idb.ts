@@ -1,7 +1,7 @@
 import { StateStorage } from "zustand/middleware";
 import { get, set, del } from "idb-keyval";
 
-export const zustandStorage: StateStorage = {
+export const zustandIDBStorage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {
     return (await get(name)) || null;
   },
@@ -19,7 +19,7 @@ export const zustandStorage: StateStorage = {
  * @param {String} name
  * @returns
  */
-export const removeItem = (name: string) => indexedDB.deleteDatabase(name);
+export const removeIDBItem = (name: string) => indexedDB.deleteDatabase(name);
 
 /**
  * this is the key of indexedDB generated from from postgres

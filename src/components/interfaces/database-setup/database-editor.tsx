@@ -3,9 +3,9 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
 import { modal } from "@/components/ui/modals";
 import { Button } from "@/components/ui/button";
+import { Database, useDBStore } from "@/stores";
 import { IconLoader } from "@tabler/icons-react";
 import { Textarea } from "@/components/ui/textarea";
-import { Database, useDBStore } from "@/stores";
 import { useFormState } from "@/components/hooks/use-form-state";
 import {
   FormField,
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 
 export const DatabaseEditor: FC<{ database: Database }> = ({ database }) => {
-  const form = useFormState<Omit<Database, "name">>(database);
+  const form = useFormState<Pick<Database, "description">>(database);
 
   const create = () =>
     form.submit(async (data) => {
@@ -30,12 +30,12 @@ export const DatabaseEditor: FC<{ database: Database }> = ({ database }) => {
     <FormFieldset title="Database Metadata">
       <FormField>
         <FormLabel htmlFor="name">Name</FormLabel>
-        <Input disabled id="name" name="name" value={database.name} />
+        <Input disabled value="name" name="name" value={database.name} />
       </FormField>
       <FormField>
         <FormLabel htmlFor="description">Description</FormLabel>
         <Textarea
-          id="description"
+          value="description"
           name="description"
           value={form.data?.description}
           placeholder="This database is a..."
