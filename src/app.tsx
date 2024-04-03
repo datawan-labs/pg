@@ -31,7 +31,7 @@ const App = () => {
     modal.open({
       title: "Databases",
       children: <DatabaseList />,
-      description: "Everything is postgres in the end of the day",
+      description: "It start with postgresql and ended with postgresql",
     });
 
   return (
