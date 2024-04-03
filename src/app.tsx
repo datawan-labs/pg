@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useDBStore } from "@/stores";
 import * as Tabs from "@radix-ui/react-tabs";
-import { modal } from "@/components/ui/modals";
 import { Badge } from "@/components/ui/badge";
+import { modal } from "@/components/ui/modals";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layouts/container";
 import { SchemaERD } from "@/components/interfaces/schema-erd";
 import { useIsDesktop } from "./components/hooks/use-is-desktop";
-import { DarkModeToggler } from "./components/layouts/dark-mode";
 import { Header, HeaderLogo } from "@/components/layouts/header";
+import { ThemeSwitcher } from "./components/layouts/theme-switcher";
 import { QueryHistory } from "@/components/interfaces/query-history";
 import { QueryPlayground } from "@/components/interfaces/query-playground";
 import { Navigation, NavigationItem } from "@/components/layouts/navigation";
@@ -41,17 +41,14 @@ const App = () => {
         <div className="flex flex-row items-start gap-1 px-2">
           <h1 className="text-xl font-semibold capitalize">{activeMenu}</h1>
           {activeDatabase && (
-            <Badge
-              variant="outline"
-              className="hidden flex-row items-center gap-0.5 sm:flex"
-            >
+            <Badge className="hidden flex-row items-center gap-0.5 sm:flex">
               <IconDatabase className="hidden size-3 stroke-1 sm:flex" />
               <span className="line-clamp-1">{activeDatabase.name}</span>
             </Badge>
           )}
         </div>
         <div className="ml-auto mr-2 flex flex-row items-center justify-center gap-1.5 ">
-          <DarkModeToggler />
+          <ThemeSwitcher />
           <Button
             size="sm"
             variant="outline"

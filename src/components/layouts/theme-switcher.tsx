@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { IconMoon, IconSun } from "@tabler/icons-react";
 import { useDarkMode } from "@/components/hooks/use-dark-mode";
 
-export const DarkModeToggler = () => {
+export const ThemeSwitcher = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   return (

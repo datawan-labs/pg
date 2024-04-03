@@ -1,6 +1,6 @@
 import mermaid from "mermaid";
-import { cn } from "@/utils/classnames";
 import { useDBStore } from "@/stores";
+import { cn } from "@/utils/classnames";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { PublicSchemaTree } from "./schema-tree";
@@ -18,14 +18,17 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 
+mermaid.initialize({ theme: "neutral" });
+
 const Mermaid = () => {
   const [erdElement, setERDElement] = useState<string>("");
 
   const erd = useDBStore((s) => s.databases[s.active!.name].erd);
 
   useEffect(() => {
-    erd &&
+    if (erd) {
       mermaid.render("erd-diagram", erd).then(({ svg }) => setERDElement(svg));
+    }
   }, [erd]);
 
   return (
@@ -80,7 +83,7 @@ export const SchemaERD = forwardRef<HTMLDivElement, ComponentProps<"div">>(
             </>
           )}
           <ResizablePanel order={2}>
-            <div className="size-full overflow-auto">
+            <div className="size-full overflow-auto bg-muted">
               <Mermaid />
             </div>
           </ResizablePanel>

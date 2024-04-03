@@ -43,7 +43,7 @@ const SchemaTree: FC<{ schema: DatabaseSchema }> = ({ schema }) => (
                 {t.type === "BASE TABLE" ? (
                   <IconTableColumn className="size-4" />
                 ) : (
-                  <IconTable className="size-4 text-secondary-foreground" />
+                  <IconTable className="size-4" />
                 )}
                 <div className="text-sm">{t.table}</div>
               </div>

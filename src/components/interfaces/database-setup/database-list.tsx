@@ -124,7 +124,7 @@ export const DatabaseList = () => {
 
   return (
     <div className="flex flex-col gap-y-4">
-      <Command className="rounded-md border">
+      <Command className="rounded-md border bg-background">
         <CommandInput placeholder="Connect to your database..." />
         <CommandList className="min-h-48">
           <CommandEmpty className="py-0">

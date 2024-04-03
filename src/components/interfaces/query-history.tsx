@@ -11,26 +11,8 @@ import { useCopyToClipboard } from "@/components/hooks/use-copy";
 const QueryLogsStatements: FC<{ statement: string }> = ({ statement }) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { copyToClipboard } = useCopyToClipboard();
-
-  const copyQueryToKeyboard = (value?: string) => {
-    if (!value) return;
-
-    copyToClipboard(value);
-
-    return toast.success("copied to clipboard");
-  };
-
   return (
     <div ref={ref} className="relative overflow-hidden">
-      <Button
-        size="icon"
-        variant="outline"
-        className="absolute right-2 top-0 z-10 size-7"
-        onClick={() => copyQueryToKeyboard(statement)}
-      >
-        <IconCopy className="size-3" />
-      </Button>
       <CodeEditor
         language="pgsql"
         value={statement}
@@ -63,6 +45,16 @@ export const QueryHistory = forwardRef<HTMLDivElement, ComponentProps<"div">>(
   ({ className, ...props }, ref) => {
     const logs = useDBStore((s) => s.databases[s.active!.name].history);
 
+    const { copyToClipboard } = useCopyToClipboard();
+
+    const copyQueryToKeyboard = (value?: string) => {
+      if (!value) return;
+
+      copyToClipboard(value);
+
+      return toast.success("copied to clipboard", { duration: 500 });
+    };
+
     const reversed = logs.slice().reverse();
 
     return (
@@ -91,19 +83,27 @@ export const QueryHistory = forwardRef<HTMLDivElement, ComponentProps<"div">>(
               {idx !== reversed.length - 1 && (
                 <div
                   className={cn(
-                    "border-1 flex-1 border-r border-dashed",
+                    "border-[1.5px] flex-1 border-r border-dashed",
                     log.error ? "border-destructive/50" : "border-primary/50"
                   )}
                 />
               )}
             </div>
-            <div className="flex flex-1 flex-col gap-2 overflow-hidden rounded-sm border bg-background p-2 shadow-sm">
+            <div className="flex flex-1 flex-col gap-2 overflow-hidden rounded-sm border bg-card p-2 shadow-sm">
               <div className="flex flex-row items-center justify-between gap-2 border-b py-2 font-mono">
                 <div className="text-xs font-bold">{log.createdAt}</div>
                 <Badge>{log.executionTime} ms</Badge>
               </div>
               <div className="flex flex-col gap-2 lg:flex-row">
-                <div className="flex-1 lg:overflow-hidden">
+                <div className="relative flex-1 lg:overflow-hidden">
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="absolute right-0 top-0 z-10 size-7"
+                    onClick={() => copyQueryToKeyboard(log.statement)}
+                  >
+                    <IconCopy className="size-3" />
+                  </Button>
                   <QueryLogsStatements statement={log.statement} />
                 </div>
                 <ul className="flex-1 space-y-2 lg:border-l lg:pl-2">

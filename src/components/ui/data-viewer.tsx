@@ -149,10 +149,36 @@ export const DataViewer = <T extends Cell>({
 
     return isDarkMode
       ? {
-          bgCell: colors["--background"],
+          bgCell: colors["--muted"],
+          bgHeader: colors["--background"],
+          bgHeaderHovered: colors["--accent"],
+          bgHeaderHasFocus: colors["--accent"],
+          textHeader: colors["--foreground"],
+          bgIconHeader: colors["--foreground"],
+          fgIconHeader: colors["--background"],
+          borderColor: colors["--border"],
+          accentFg: colors["--primary-foreground"],
+          accentColor: colors["--primary"],
+          accentLight: colors["--accent"],
+          textDark: colors["--foreground"],
+          textMedium: colors["--foreground"],
+          textLight: colors["--foreground"],
         }
       : {
-          bgCell: colors["--background"], // content2
+          bgCell: colors["--muted"],
+          bgHeader: colors["--background"],
+          bgHeaderHovered: colors["--accent"],
+          bgHeaderHasFocus: colors["--accent"],
+          textHeader: colors["--foreground"],
+          bgIconHeader: colors["--foreground"],
+          fgIconHeader: colors["--background"],
+          borderColor: colors["--border"],
+          accentFg: colors["--primary-foreground"],
+          accentColor: colors["--primary"],
+          accentLight: colors["--accent"],
+          textDark: colors["--foreground"],
+          textMedium: colors["--foreground"],
+          textLight: colors["--foreground"],
         };
   }, [isDarkMode]);
 

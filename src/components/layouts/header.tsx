@@ -1,5 +1,5 @@
+import { Logo } from "../ui/logo";
 import { cn } from "@/utils/classnames";
-import { IconSquare } from "@tabler/icons-react";
 import { ComponentProps, FC } from "react";
 
 export const Header: FC<ComponentProps<"div">> = ({ className, ...props }) => (
@@ -14,7 +14,7 @@ export const Header: FC<ComponentProps<"div">> = ({ className, ...props }) => (
 
 export const HeaderLogo = () => (
   <div className="hidden size-12 items-center justify-center border-r md:flex">
-    <IconSquare className="size-5 fill-foreground" />
+    <Logo className="size-8" />
   </div>
 );
 

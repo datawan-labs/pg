@@ -1,6 +1,6 @@
 import { useDBStore } from "@/stores";
-import { DataViewer } from "./viewer";
 import { cn } from "@/utils/classnames";
+import { DataViewer } from "./data-viewer";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/sonner";
 import { modal } from "@/components/ui/modals";
@@ -55,8 +55,8 @@ export const QueryPlayground = forwardRef<
     useDBStore
       .getState()
       .execute(query)
-      .then(() => toast.success("completed"))
-      .catch((err) => toast.error((err as Error).message));
+      .then(() => toast.success("completed", { duration: 500 }))
+      .catch((err) => toast.error((err as Error).message, { duration: 500 }));
 
   const runSelectedQuery = () => {
     if (!editor.current) return;
@@ -73,8 +73,8 @@ export const QueryPlayground = forwardRef<
     useDBStore
       .getState()
       .execute(query)
-      .then(() => toast.success("completed"))
-      .catch((err) => toast.error((err as Error).message));
+      .then(() => toast.success("completed", { duration: 500 }))
+      .catch((err) => toast.error((err as Error).message, { duration: 500 }));
   };
 
   return (
@@ -166,7 +166,7 @@ export const QueryPlayground = forwardRef<
                   value={query}
                   language="pgsql"
                   onChange={setQuery}
-                  className="border md:border-0"
+                  className="bg-muted"
                   defaultValue="SELECT * FROM information_schema.tables"
                   defaultLanguage="pgsql"
                   onMount={(_editor) => {
