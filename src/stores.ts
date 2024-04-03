@@ -1,16 +1,17 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { Results, PGlite } from "@electric-sql/pglite";
+import { postgresTransformer } from "@/utils/postgres";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { Cell, DataGridValue } from "@/components/ui/data-viewer";
+import { generateMermaidErd, getDatabaseSchema } from "@/services/postgre";
 import {
   removeIDBItem,
   postgreIDBName,
   zustandIDBStorage,
   postgreIDBConnection,
-} from "./utils/idb";
-import { getDatabaseSchema } from "./services/postgre";
-import { Cell, DataGridValue } from "./components/ui/data-viewer";
-import { postgresTransformer } from "./utils/postgres";
+} from "@/utils/idb";
+
 
 interface Connection {
   name: string;
@@ -59,6 +60,12 @@ export interface Database {
 
   schema: DatabaseSchema[];
 
+  /**
+   * we are using mermaid js syntax
+   * to generating erd
+   */
+  erd: string;
+
   query?: string;
 
   datagrid?: DataGridValue<Cell>[];
@@ -97,6 +104,8 @@ export const useDBStore = create<State>()(
 
         const schema = await getDatabaseSchema(postgres);
 
+        const erd = await generateMermaidErd(postgres);
+
         return set((state) => {
           state.active = {
             name: data.name,
@@ -108,6 +117,7 @@ export const useDBStore = create<State>()(
             description: data.description,
             createdAt: new Date().toLocaleString(),
             history: [],
+            erd: erd,
             schema: schema,
           };
         });
@@ -135,12 +145,15 @@ export const useDBStore = create<State>()(
 
         const schema = await getDatabaseSchema(postgres);
 
+        const erd = await generateMermaidErd(postgres);
+
         return set((state) => {
           state.active = {
             name: name,
             postgres: postgres,
           };
 
+          state.databases[name].erd = erd;
           state.databases[name].schema = schema;
         });
       },
@@ -197,7 +210,10 @@ export const useDBStore = create<State>()(
 
         const schema = await getDatabaseSchema(connection.postgres);
 
+        const erd = await generateMermaidErd(connection.postgres);
+
         set((state) => {
+          state.databases[connection.name].erd = erd;
           state.databases[connection.name].schema = schema;
         });
       },

@@ -1,7 +1,7 @@
 import { useDBStore } from "@/stores";
 import { DataViewer } from "./viewer";
 import { cn } from "@/utils/classnames";
-import { DatabaseSchema } from "./schema";
+import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/sonner";
 import { modal } from "@/components/ui/modals";
 import { OnMount } from "@monaco-editor/react";
@@ -9,10 +9,12 @@ import { Button } from "@/components/ui/button";
 import { CodeEditor } from "@/components/ui/code-editor";
 import { forwardRef, ComponentProps, useRef } from "react";
 import { useIsDesktop } from "@/components/hooks/use-is-desktop";
+import { AllDatabaseSchemaTree } from "@/components/interfaces/schema-tree";
 import {
-  IconDotsVertical,
+  IconReload,
   IconPlayerPlay,
   IconTableColumn,
+  IconDotsVertical,
 } from "@tabler/icons-react";
 import {
   ResizablePanel,
@@ -21,10 +23,15 @@ import {
 } from "@/components/ui/resizable";
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const QueryPlayground = forwardRef<
   HTMLDivElement,
@@ -38,11 +45,12 @@ export const QueryPlayground = forwardRef<
 
   const datagrid = useDBStore((s) => s.databases[s.active!.name].datagrid);
 
-  const setQuery = (query: string | undefined) => useDBStore.setState((s) => {
-    s.databases[s.active!.name].query = query;
-  });
+  const setQuery = (query: string | undefined) =>
+    useDBStore.setState((s) => {
+      s.databases[s.active!.name].query = query;
+    });
 
-  const run = () =>
+  const runAllQuery = () =>
     query &&
     useDBStore
       .getState()
@@ -50,7 +58,7 @@ export const QueryPlayground = forwardRef<
       .then(() => toast.success("completed"))
       .catch((err) => toast.error((err as Error).message));
 
-  const runSelection = () => {
+  const runSelectedQuery = () => {
     if (!editor.current) return;
 
     const selection = editor.current.getSelection();
@@ -83,7 +91,27 @@ export const QueryPlayground = forwardRef<
         {isDesktop && (
           <>
             <ResizablePanel id="database-schema" defaultSize={20} order={1}>
-              <DatabaseSchema />
+              <div className="flex h-full flex-col gap-2 overflow-hidden p-2">
+                <div className="flex flex-row items-center justify-between border-b py-1">
+                  <Label>Schema</Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="size-6"
+                        onClick={() => useDBStore.getState().reload()}
+                      >
+                        <IconReload className="size-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Reload Schema</TooltipContent>
+                  </Tooltip>
+                </div>
+                <div className="flex-1 overflow-auto">
+                  <AllDatabaseSchemaTree />
+                </div>
+              </div>
             </ResizablePanel>
             <ResizableHandle withHandle direction="vertical" />
           </>
@@ -99,7 +127,7 @@ export const QueryPlayground = forwardRef<
                       variant="outline"
                       className="gap-1 text-xs"
                       onClick={() =>
-                        modal.open({ children: <DatabaseSchema /> })
+                        modal.open({ children: <AllDatabaseSchemaTree /> })
                       }
                     >
                       <IconTableColumn className="size-4" />
@@ -109,7 +137,7 @@ export const QueryPlayground = forwardRef<
                   <div className="bottom-2 right-4 z-50 flex items-center gap-0.5 md:absolute">
                     <Button
                       size="xs"
-                      onClick={run}
+                      onClick={runAllQuery}
                       className="gap-1 rounded-r-none text-xs"
                       disabled={query == undefined || query.trim().length === 0}
                     >
@@ -127,7 +155,7 @@ export const QueryPlayground = forwardRef<
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem onClick={runSelection}>
+                        <DropdownMenuItem onClick={runSelectedQuery}>
                           Run Selection
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -139,6 +167,7 @@ export const QueryPlayground = forwardRef<
                   language="pgsql"
                   onChange={setQuery}
                   className="border md:border-0"
+                  defaultValue="SELECT * FROM information_schema.tables"
                   defaultLanguage="pgsql"
                   onMount={(_editor) => {
                     editor.current = _editor;

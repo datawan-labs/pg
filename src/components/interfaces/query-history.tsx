@@ -71,8 +71,14 @@ export const QueryHistory = forwardRef<HTMLDivElement, ComponentProps<"div">>(
         className={cn("flex flex-col size-full gap-2 overflow-auto", className)}
         {...props}
       >
+        {reversed.length === 0 && (
+          <div className="flex size-full items-center justify-center text-center">
+            Looks like you haven't executed any queries in this database yet.
+            Let's try run some queries
+          </div>
+        )}
         {reversed.map((log, idx) => (
-          <div key={idx} className="container m-auto flex flex-row gap-2 p-2">
+          <div key={idx} className="container mx-auto flex flex-row gap-2 p-2">
             <div className="flex flex-col items-center gap-2">
               <div
                 className={cn(
@@ -106,8 +112,11 @@ export const QueryHistory = forwardRef<HTMLDivElement, ComponentProps<"div">>(
                       {log.error}
                     </li>
                   )}
-                  {log.results?.map((r) => (
-                    <li className="rounded-sm border bg-muted p-2 font-mono text-xs">
+                  {log.results?.map((r, idx) => (
+                    <li
+                      key={idx}
+                      className="rounded-sm border bg-muted p-2 font-mono text-xs"
+                    >
                       <span>affected rows: {r.affectedRows}, </span>
                       <span>total records: {r.totalRecords}</span>
                     </li>
