@@ -14,7 +14,7 @@ import {
   FormFieldset,
 } from "@/components/ui/form";
 
-export const DatabaseEditor: FC<{ database: Database }> = ({ database }) => {
+export const DatabaseEditor: FC<{ database: Pick<Database, "name" | "description"> }> = ({ database }) => {
   const form = useFormState<Pick<Database, "description">>(database);
 
   const create = () =>

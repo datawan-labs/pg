@@ -171,7 +171,7 @@ export const DataViewer = <T extends Cell>({
         className={"size-full flex-1"}
         onColumnResize={onColumnResize}
       />
-      <div value="portal" className="fixed inset-x-0 top-0 z-[999]" />
+      <div className="fixed inset-x-0 top-0 z-[999]" />
     </div>
   );
 };

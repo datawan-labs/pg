@@ -4,14 +4,18 @@ import { Results, PGlite } from "@electric-sql/pglite";
 import { postgresTransformer } from "@/utils/postgres";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { Cell, DataGridValue } from "@/components/ui/data-viewer";
-import { generateMermaidErd, getDatabaseSchema } from "@/services/postgre";
+import { generateMermaidErd, getDatabaseSchema } from "@/postgres/setup";
+import {
+  SampleDataMeta,
+  SampleDatakey,
+  getSampleDatabaseQuery,
+} from "./postgres/sample-data";
 import {
   removeIDBItem,
   postgreIDBName,
   zustandIDBStorage,
   postgreIDBConnection,
 } from "@/utils/idb";
-
 
 interface Connection {
   name: string;
@@ -80,6 +84,8 @@ interface State {
 
   update: (name: string, data: Pick<Database, "description">) => Promise<void>;
 
+  import: (data: SampleDataMeta<SampleDatakey>) => Promise<void>;
+
   remove: (name: string) => Promise<void>;
 
   connect: (name: string) => Promise<void>;
@@ -129,6 +135,44 @@ export const useDBStore = create<State>()(
 
           state.databases[name].createdAt = new Date().toLocaleString();
         }),
+
+      import: async (data) => {
+        const sql = await getSampleDatabaseQuery(data.key);
+
+        /**
+         * name with random 5 digit string
+         */
+        const name = `${data.key}-${
+          Math.floor(Math.random() * 90000) + 10000
+        }`;
+
+        const postgres = new PGlite(postgreIDBConnection(name));
+
+        /**
+         * import data
+         */
+        await postgres.exec(sql);
+
+        const schema = await getDatabaseSchema(postgres);
+
+        const erd = await generateMermaidErd(postgres);
+
+        set((state) => {
+          state.active = {
+            name: name,
+            postgres: postgres,
+          };
+
+          state.databases[name] = {
+            name: name,
+            description: data.description,
+            createdAt: new Date().toLocaleString(),
+            history: [],
+            erd: erd,
+            schema: schema,
+          };
+        });
+      },
 
       remove: async (name) => {
         set((state) => {

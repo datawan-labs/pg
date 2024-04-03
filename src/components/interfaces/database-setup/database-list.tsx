@@ -11,6 +11,7 @@ import {
   CommandList,
   CommandEmpty,
   CommandInput,
+  CommandGroup,
 } from "@/components/ui/command";
 import {
   DropdownMenu,
@@ -18,8 +19,15 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
+import {
+  SAMPLE_DATA,
+  SampleDataMeta,
+  SampleDatakey,
+} from "@/postgres/sample-data";
 
-const DatabaseListItem: FC<{ database: Database }> = ({ database }) => {
+const DatabaseListItem: FC<{
+  database: Pick<Database, "name" | "description" | "createdAt">;
+}> = ({ database }) => {
   const active = useDBStore((state) => state.active);
 
   const connectToDatabase: ComponentProps<"button">["onClick"] = (e) => {
@@ -102,6 +110,18 @@ export const DatabaseList = () => {
       children: <DatabaseCreator />,
     });
 
+  const importDatabase = (data: SampleDataMeta<SampleDatakey>) =>
+    modal.openConfirmModal({
+      closeOnConfirm: false,
+      title: "Import Sample Data",
+      children: `Continue to import ${data.name}?`,
+      onConfirm: () =>
+        useDBStore
+          .getState()
+          .import(data)
+          .then(() => modal.closeAll()),
+    });
+
   return (
     <div className="flex flex-col gap-y-4">
       <Command className="rounded-md border">
@@ -115,15 +135,35 @@ export const DatabaseList = () => {
               </p>
             </div>
           </CommandEmpty>
-          {Object.keys(dbs).map((name) => (
-            <CommandItem
-              key={name}
-              value={name}
-              onSelect={(value) => useDBStore.getState().connect(value)}
-            >
-              <DatabaseListItem database={dbs[name]} />
-            </CommandItem>
-          ))}
+          <CommandGroup heading="Saved Database">
+            {Object.keys(dbs).map((name) => (
+              <CommandItem
+                key={name}
+                value={name}
+                onSelect={(value) => useDBStore.getState().connect(value)}
+              >
+                <DatabaseListItem database={dbs[name]} />
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          <CommandGroup heading="Sample data">
+            {SAMPLE_DATA.map((data) => (
+              <CommandItem
+                key={data.key}
+                value={data.key}
+                onSelect={() => importDatabase(data)}
+              >
+                <div className="w-full space-y-1 py-1">
+                  <h4 className="line-clamp-1 flex-1 text-sm font-semibold">
+                    {data.name}
+                  </h4>
+                  <div className="whitespace-pre-wrap text-xs text-muted-foreground sm:line-clamp-1">
+                    {data.description}
+                  </div>
+                </div>
+              </CommandItem>
+            ))}
+          </CommandGroup>
         </CommandList>
       </Command>
       <div className="relative">
