@@ -2,9 +2,9 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
 import { modal } from "@/components/ui/modals";
 import { Button } from "@/components/ui/button";
+import { Database, useDBStore } from "@/stores";
 import { IconLoader } from "@tabler/icons-react";
 import { Textarea } from "@/components/ui/textarea";
-import { Database, useDBStore } from "@/stores";
 import { useFormState } from "@/components/hooks/use-form-state";
 import {
   FormField,
@@ -24,6 +24,8 @@ export const DatabaseCreator = () => {
       if (!data.name.trim())
         return form.setError("name", "name cannot be null");
 
+      modal.setState({ isSubmitting: true });
+
       await useDBStore
         .getState()
         .create(data)
@@ -42,6 +44,7 @@ export const DatabaseCreator = () => {
         <Input
           name="name"
           value={form.data?.name}
+          disabled={form.isSubmitting}
           placeholder="database name, must be unique"
           onChange={(e) => form.setValue("name", e.target.value)}
         />
@@ -51,6 +54,7 @@ export const DatabaseCreator = () => {
         <FormLabel htmlFor="description">Description</FormLabel>
         <Textarea
           name="description"
+          disabled={form.isSubmitting}
           value={form.data?.description}
           placeholder="This database is a..."
           onChange={(e) => form.setValue("description", e.target.value)}

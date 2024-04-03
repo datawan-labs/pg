@@ -14,7 +14,9 @@ import {
   FormFieldset,
 } from "@/components/ui/form";
 
-export const DatabaseEditor: FC<{ database: Pick<Database, "name" | "description"> }> = ({ database }) => {
+export const DatabaseEditor: FC<{
+  database: Pick<Database, "name" | "description">;
+}> = ({ database }) => {
   const form = useFormState<Pick<Database, "description">>(database);
 
   const create = () =>
@@ -36,6 +38,7 @@ export const DatabaseEditor: FC<{ database: Pick<Database, "name" | "description
         <FormLabel htmlFor="description">Description</FormLabel>
         <Textarea
           name="description"
+          disabled={form.isSubmitting}
           value={form.data?.description}
           placeholder="This database is a..."
           onChange={(e) => form.setValue("description", e.target.value)}

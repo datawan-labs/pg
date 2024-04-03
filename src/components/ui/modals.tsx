@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { IconLoader } from "@tabler/icons-react";
 import { useIsDesktop } from "@/components/hooks/use-is-desktop";
 import {
   Dialog,
@@ -30,8 +31,6 @@ interface ModalArgs {
 
   description?: string;
 
-  variant?: "warning" | "error" | "success" | "info" | "question";
-
   children?: ReactNode;
 
   size?: DialogSize;
@@ -44,8 +43,6 @@ interface ModalConfirmArgs {
 
   description?: string;
 
-  icon?: "warning" | "error" | "success" | "info" | "question";
-
   children?: ReactNode;
 
   size?: DialogSize;
@@ -56,7 +53,7 @@ interface ModalConfirmArgs {
     cancel?: string;
   };
 
-  onConfirm?: () => void;
+  onConfirm?: () => void | Promise<void>;
 
   /**
    * close when confirm button clicked.
@@ -75,12 +72,14 @@ interface ModalConfirmArgs {
 
 interface ModalState {
   isOpen: boolean;
+  isSubmitting: boolean;
   modals: (ModalArgs | ModalConfirmArgs)[];
 }
 
 export const useModalStore = create<ModalState>()(() => ({
   modals: [],
   isOpen: false,
+  isSubmitting: false,
 }));
 
 /**
@@ -127,7 +126,7 @@ export const modal = {
         modals: state.modals.slice(0, -1),
       }));
 
-    useModalStore.setState({ isOpen: false });
+    useModalStore.setState({ isOpen: false, isSubmitting: false });
 
     /**
      * note that we reset the state in setTimeout
@@ -139,7 +138,7 @@ export const modal = {
   },
 
   closeAll: () => {
-    useModalStore.setState({ isOpen: false });
+    useModalStore.setState({ isOpen: false, isSubmitting: false });
 
     /**
      * note that we reset the state in setTimeout
@@ -149,6 +148,12 @@ export const modal = {
      */
     setTimeout(() => useModalStore.setState({ modals: [] }), FADE_DURATION);
   },
+
+  /**
+   * updat internal state from outsize word
+   */
+  setState: (state: Pick<ModalState, "isSubmitting">) =>
+    useModalStore.setState(state),
 };
 
 /**
@@ -159,18 +164,33 @@ export const Modals = () => {
 
   const isOpen = useModalStore((state) => state.isOpen);
 
+  const isSubmitting = useModalStore((state) => state.isSubmitting);
+
+  console.log(isSubmitting);
+
   const modals = useModalStore((state) => state.modals);
 
   const activeModal = modals[modals.length - 1];
 
   const closeModal = () => modal.close();
 
-  const onConfirm = () => {
+  const onConfirm = async () => {
     if (!activeModal) return;
 
     if (activeModal.type === "MODAL") return;
 
-    activeModal.onConfirm?.();
+    if (activeModal.onConfirm) {
+      try {
+        useModalStore.setState({ isSubmitting: true });
+
+        await activeModal.onConfirm();
+      } catch (error) {
+        throw error as Error;
+      } finally {
+        console.log(isSubmitting);
+        useModalStore.setState({ isSubmitting: false });
+      }
+    }
 
     if (activeModal.closeOnConfirm !== false) return modal.close();
   };
@@ -193,12 +213,14 @@ export const Modals = () => {
       <DialogContent
         className="bg-background text-foreground"
         size={activeModal?.size}
-        onPointerDownOutside={(e) =>
-          activeModal?.type === "CONFIRM_MODAL" && e.preventDefault()
-        }
-        onEscapeKeyDown={(e) =>
-          activeModal?.type === "CONFIRM_MODAL" && e.preventDefault()
-        }
+        onPointerDownOutside={(e) => {
+          if (activeModal?.type === "CONFIRM_MODAL" || isSubmitting)
+            e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
+          if (activeModal?.type === "CONFIRM_MODAL" || isSubmitting)
+            e.preventDefault();
+        }}
       >
         {(activeModal?.title || activeModal?.description) && (
           <DialogHeader>
@@ -216,12 +238,18 @@ export const Modals = () => {
             <Button
               variant="outline"
               onClick={onCancel}
+              disabled={isSubmitting}
               className="mt-2 sm:mt-0"
             >
               {activeModal?.label?.cancel || "Cancel"}
             </Button>
-            <Button onClick={onConfirm}>
-              {activeModal?.label?.confirm || "Confirm"}
+            <Button
+              className="gap-2"
+              onClick={onConfirm}
+              disabled={isSubmitting}
+            >
+              {isSubmitting && <IconLoader className="size-4 animate-spin" />}
+              <span>{activeModal?.label?.confirm || "Confirm"}</span>
             </Button>
           </DialogFooter>
         )}
@@ -250,13 +278,19 @@ export const Modals = () => {
         <div className="overflow-auto">{activeModal?.children}</div>
         {activeModal?.type === "CONFIRM_MODAL" && (
           <DrawerFooter className="pt-2">
-            <Button onClick={onConfirm}>
-              {activeModal?.label?.confirm || "Confirm"}
+            <Button
+              className="gap-2"
+              onClick={onConfirm}
+              disabled={isSubmitting}
+            >
+              {isSubmitting && <IconLoader className="size-4 animate-spin" />}
+              <span>{activeModal?.label?.confirm || "Confirm"}</span>
             </Button>
-            <DrawerClose asChild>
+            <DrawerClose asChild disabled={isSubmitting}>
               <Button
                 variant="outline"
                 onClick={onCancel}
+                disabled={isSubmitting}
                 className="mt-2 sm:mt-0"
               >
                 {activeModal?.label?.cancel || "Cancel"}
