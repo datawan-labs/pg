@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { useDBStore } from "@/stores";
 import * as Tabs from "@radix-ui/react-tabs";
 import { modal } from "@/components/ui/modals";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layouts/container";
-import { QueryLogs } from "@/components/interfaces/query-logs";
 import { SchemaERD } from "@/components/interfaces/schema-erd";
 import { useIsDesktop } from "./components/hooks/use-is-desktop";
+import { DarkModeToggler } from "./components/layouts/dark-mode";
 import { Header, HeaderLogo } from "@/components/layouts/header";
+import { QueryHistory } from "@/components/interfaces/query-history";
 import { QueryPlayground } from "@/components/interfaces/query-playground";
 import { Navigation, NavigationItem } from "@/components/layouts/navigation";
 import { DatabaseList } from "@/components/interfaces/database-setup/database-list";
@@ -16,9 +19,6 @@ import {
   IconHierarchy2,
   IconTableColumn,
 } from "@tabler/icons-react";
-import { useDBStore } from "./stores";
-import { Badge } from "./components/ui/badge";
-import { DarkModeToggler } from "./components/layouts/dark-mode";
 
 const App = () => {
   const isDesktop = useIsDesktop();
@@ -80,10 +80,10 @@ const App = () => {
                 <IconTableColumn className="size-5" />
               </NavigationItem>
             </Tabs.Trigger>
-            <Tabs.Trigger value="logs" asChild>
+            <Tabs.Trigger value="history" asChild>
               <NavigationItem
-                tooltip="Query Logs"
-                active={activeMenu === "logs"}
+                tooltip="Query History"
+                active={activeMenu === "history"}
               >
                 <IconLogs className="size-5" />
               </NavigationItem>
@@ -100,8 +100,8 @@ const App = () => {
             <Tabs.Content value="playground" asChild>
               <QueryPlayground />
             </Tabs.Content>
-            <Tabs.Content value="logs" asChild>
-              <QueryLogs />
+            <Tabs.Content value="history" asChild>
+              <QueryHistory />
             </Tabs.Content>
             <Tabs.Content value="erd" asChild>
               <SchemaERD />
