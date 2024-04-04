@@ -166,8 +166,6 @@ export const Modals = () => {
 
   const isSubmitting = useModalStore((state) => state.isSubmitting);
 
-  console.log(isSubmitting);
-
   const modals = useModalStore((state) => state.modals);
 
   const activeModal = modals[modals.length - 1];
@@ -187,7 +185,6 @@ export const Modals = () => {
       } catch (error) {
         throw error as Error;
       } finally {
-        console.log(isSubmitting);
         useModalStore.setState({ isSubmitting: false });
       }
     }

@@ -191,8 +191,6 @@ export const useDBStore = create<State>()(
 
         const erd = await generateMermaidErd(postgres);
 
-        console.log(erd)
-
         return set((state) => {
           state.active = {
             name: name,

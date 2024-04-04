@@ -169,8 +169,13 @@ export const QueryPlayground = forwardRef<
                   className="bg-muted"
                   defaultValue="SELECT * FROM information_schema.tables"
                   defaultLanguage="pgsql"
-                  onMount={(_editor) => {
+                  onMount={(_editor, monaco) => {
                     editor.current = _editor;
+
+                    editor.current.addCommand(
+                      monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+                      runSelectedQuery
+                    );
                   }}
                   options={{
                     folding: isDesktop,

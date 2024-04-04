@@ -18,6 +18,7 @@ import {
   IconDatabase,
   IconHierarchy2,
   IconTableColumn,
+  IconBrandGithub,
 } from "@tabler/icons-react";
 
 const App = () => {
@@ -42,12 +43,26 @@ const App = () => {
           <h1 className="text-xl font-semibold capitalize">{activeMenu}</h1>
           {activeDatabase && (
             <Badge className="hidden flex-row items-center gap-0.5 sm:flex">
-              <IconDatabase className="hidden size-3 stroke-1 sm:flex" />
+              <IconDatabase className="size-3 stroke-1" />
               <span className="line-clamp-1">{activeDatabase.name}</span>
             </Badge>
           )}
         </div>
         <div className="ml-auto mr-2 flex flex-row items-center justify-center gap-1.5 ">
+          <Button
+            asChild
+            size="icon"
+            variant="ghost"
+            className="hidden size-7 md:flex"
+          >
+            <a
+              href="https://github.com/datawan-labs/pg"
+              referrerPolicy="no-referrer"
+              target="_blank"
+            >
+              <IconBrandGithub className="size-4" />
+            </a>
+          </Button>
           <ThemeSwitcher />
           <Button
             size="sm"

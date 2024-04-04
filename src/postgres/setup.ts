@@ -4,8 +4,6 @@ import { DatabaseSchema, TableType } from "@/stores";
 export const getDatabaseSchema = async (
   pg: PGlite
 ): Promise<DatabaseSchema[]> => {
-  console.time("time");
-
   const result = await pg.query<{
     table_name: string;
     table_type: TableType;
@@ -34,7 +32,6 @@ export const getDatabaseSchema = async (
       t.table_name,
       t.table_type;
   `);
-  console.timeEnd("time");
 
   const schema = new Map();
 
