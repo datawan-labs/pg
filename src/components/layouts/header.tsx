@@ -1,6 +1,11 @@
 import { Logo } from "../ui/logo";
 import { cn } from "@/utils/classnames";
 import { ComponentProps, FC } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const Header: FC<ComponentProps<"div">> = ({ className, ...props }) => (
   <header
@@ -13,9 +18,16 @@ export const Header: FC<ComponentProps<"div">> = ({ className, ...props }) => (
 );
 
 export const HeaderLogo = () => (
-  <div className="hidden size-12 items-center justify-center border-r md:flex">
-    <Logo className="size-8" />
-  </div>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <div className="hidden size-12 items-center justify-center border-r md:flex">
+        <Logo className="size-8" />
+      </div>
+    </TooltipTrigger>
+    <TooltipContent side="right" sideOffset={5}>
+      Datawan
+    </TooltipContent>
+  </Tooltip>
 );
 
 export const HeaderTitle: FC<ComponentProps<"h1">> = ({

@@ -9,7 +9,7 @@ import {
   SampleDataMeta,
   SampleDatakey,
   getSampleDatabaseQuery,
-} from "./postgres/sample-data";
+} from "@/postgres/sample-data";
 import {
   removeIDBItem,
   postgreIDBName,
@@ -142,9 +142,7 @@ export const useDBStore = create<State>()(
         /**
          * name with random 5 digit string
          */
-        const name = `${data.key}-${
-          Math.floor(Math.random() * 90000) + 10000
-        }`;
+        const name = `${data.key}-${Math.floor(Math.random() * 90000) + 10000}`;
 
         const postgres = new PGlite(postgreIDBConnection(name));
 
