@@ -49,16 +49,11 @@ const App = () => {
           )}
         </div>
         <div className="ml-auto mr-2 flex flex-row items-center justify-center gap-1.5 ">
-          <Button
-            asChild
-            size="icon"
-            variant="ghost"
-            className="hidden size-7 md:flex"
-          >
+          <Button asChild size="icon" variant="ghost" className="size-7">
             <a
-              href="https://github.com/datawan-labs/pg"
-              referrerPolicy="no-referrer"
               target="_blank"
+              referrerPolicy="no-referrer"
+              href="https://github.com/datawan-labs/pg"
             >
               <IconBrandGithub className="size-4" />
             </a>
