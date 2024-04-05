@@ -1,5 +1,7 @@
 import { useDBStore } from "@/stores";
 import { cn } from "@/utils/classnames";
+import { toast } from "@/components/ui/sonner";
+import { Button } from "@/components/ui/button";
 import { forwardRef, useEffect, useState } from "react";
 import {
   Cell,
@@ -29,6 +31,52 @@ export const DataViewer = forwardRef<HTMLDivElement, DataViewerProps>(
 
     const lastHistory = history ? history[history.length - 1] : undefined;
 
+    /**
+     * export / download active or selected data to
+     * csv files
+     */
+    const exportToCSV = () => {
+      const activeResult = data[active];
+
+      if (!activeResult) return;
+
+      const headers = Object.keys(activeResult.column);
+
+      if (headers.length === 0) return toast.error("nothing to export");
+
+      let csv = headers.join(",") + "\r\n";
+
+      activeResult.data.forEach((item) => {
+        csv +=
+          headers
+            .map((header) => {
+              return JSON.stringify(item[header], (_key, value) => {
+                return value === null ? "" : value;
+              });
+            })
+            .join(",") + "\r\n";
+      });
+
+      const blob = new Blob([csv], { type: "text/plain" });
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `query-result-${active + 1}-${lastHistory?.createdAt}.csv`;
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+
+      setTimeout(() => {
+        a.remove();
+      }, 100);
+    };
+
+    /**
+     * when the result changes, make sure
+     * active index is always less than data.length
+     */
     useEffect(() => {
       if (active >= data.length)
         setActive(data.length > 0 ? data.length - 1 : 0);
@@ -87,6 +135,14 @@ export const DataViewer = forwardRef<HTMLDivElement, DataViewerProps>(
                 {lastHistory?.results?.[active].affectedRows} affecteds
               </span>
             </div>
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={exportToCSV}
+              className="h-6 text-xs"
+            >
+              export
+            </Button>
           </div>
         </div>
       );

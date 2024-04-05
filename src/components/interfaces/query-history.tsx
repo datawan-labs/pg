@@ -20,6 +20,7 @@ const QueryLogsStatements: FC<{ statement: string }> = ({ statement }) => {
           folding: false,
           readOnly: true,
           lineNumbers: "off",
+          contextmenu: false,
           automaticLayout: true,
           overviewRulerLanes: 0,
           lineNumbersMinChars: 0,

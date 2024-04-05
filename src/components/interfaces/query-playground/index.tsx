@@ -138,14 +138,14 @@ export const QueryPlayground = forwardRef<
                     <Button
                       size="xs"
                       onClick={runAllQuery}
-                      className="gap-1 rounded-r-none text-xs"
+                      className="gap-1 text-xs md:rounded-r-none"
                       disabled={query == undefined || query.trim().length === 0}
                     >
                       <span>Run</span>
                       <IconPlayerPlay className="size-4" />
                     </Button>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                      <DropdownMenuTrigger asChild className="hidden md:flex">
                         <Button
                           size="icon"
                           className="size-7 rounded-l-none"
