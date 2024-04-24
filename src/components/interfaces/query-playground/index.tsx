@@ -81,7 +81,7 @@ export const QueryPlayground = forwardRef<
     <div
       ref={ref}
       {...props}
-      className={cn("flex flex-1 flex-col size-full p-0", className)}
+      className={cn("flex size-full flex-1 flex-col p-0", className)}
     >
       <ResizablePanelGroup
         direction="horizontal"
@@ -134,7 +134,7 @@ export const QueryPlayground = forwardRef<
                       <span>Table</span>
                     </Button>
                   )}
-                  <div className="bottom-2 right-4 z-50 flex items-center gap-0.5 md:absolute">
+                  <div className="right-4 bottom-2 z-50 flex items-center gap-0.5 md:absolute">
                     <Button
                       size="xs"
                       onClick={runAllQuery}

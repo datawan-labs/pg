@@ -52,7 +52,7 @@ const DatabaseListItem: FC<{
   return (
     <div className="flex w-full flex-col gap-y-1 py-1">
       <div className="flex flex-row items-center justify-between">
-        <div className="line-clamp-1 flex-1 text-sm font-semibold">
+        <div className="line-clamp-1 flex-1 font-semibold text-sm">
           <h4>{database.name}</h4>
         </div>
         <div className="flex flex-row items-center justify-center gap-x-1">
@@ -90,10 +90,10 @@ const DatabaseListItem: FC<{
         </div>
       </div>
       <div className="hidden justify-between gap-4 sm:flex">
-        <div className="whitespace-pre-wrap text-xs text-muted-foreground sm:line-clamp-1">
+        <div className="whitespace-pre-wrap text-muted-foreground text-xs sm:line-clamp-1">
           {database.description}
         </div>
-        <div className="whitespace-nowrap text-xs text-muted-foreground">
+        <div className="whitespace-nowrap text-muted-foreground text-xs">
           {database.createdAt}
         </div>
       </div>
@@ -128,9 +128,9 @@ export const DatabaseList = () => {
         <CommandInput placeholder="Connect to your database..." />
         <CommandList className="min-h-48">
           <CommandEmpty className="py-0">
-            <div className="flex h-48 flex-1 flex-col items-center justify-center  text-center">
-              <h3 className="text-sm font-bold tracking-tight">No database</h3>
-              <p className="text-xs text-muted-foreground">
+            <div className="flex h-48 flex-1 flex-col items-center justify-center text-center">
+              <h3 className="font-bold text-sm tracking-tight">No database</h3>
+              <p className="text-muted-foreground text-xs">
                 You can start playing as soon as you add a database.
               </p>
             </div>
@@ -154,10 +154,10 @@ export const DatabaseList = () => {
                 onSelect={() => importDatabase(data)}
               >
                 <div className="w-full space-y-1 py-1">
-                  <h4 className="line-clamp-1 flex-1 text-sm font-semibold">
+                  <h4 className="line-clamp-1 flex-1 font-semibold text-sm">
                     {data.name}
                   </h4>
-                  <div className="whitespace-pre-wrap text-xs text-muted-foreground sm:line-clamp-1">
+                  <div className="whitespace-pre-wrap text-muted-foreground text-xs sm:line-clamp-1">
                     {data.description}
                   </div>
                 </div>

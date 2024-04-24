@@ -13,7 +13,7 @@ export const Navigation = forwardRef<HTMLDivElement, ComponentProps<"nav">>(
     <nav
       ref={ref}
       className={cn(
-        "flex w-full md:w-12 flex-row md:flex-col items-center justify-evenly md:justify-start gap-1 border-t md:border-t-0 md:border-r py-0.5 md:py-2",
+        "flex w-full flex-row items-center justify-evenly gap-1 border-t py-0.5 md:w-12 md:flex-col md:justify-start md:border-t-0 md:border-r md:py-2",
         className
       )}
       {...props}
@@ -37,7 +37,7 @@ export const NavigationItem = forwardRef<
           aria-label={tooltip}
           className={cn(
             "rounded-lg",
-            active && "bg-muted border border-border",
+            active && "border border-border bg-muted",
             className
           )}
           {...props}

@@ -40,7 +40,7 @@ const App = () => {
       <Header>
         <HeaderLogo />
         <div className="flex flex-row items-start gap-1 px-2">
-          <h1 className="text-xl font-semibold capitalize">{activeMenu}</h1>
+          <h1 className="font-semibold text-xl capitalize">{activeMenu}</h1>
           {activeDatabase && (
             <Badge className="hidden flex-row items-center gap-0.5 sm:flex">
               <IconDatabase className="size-3 stroke-1" />
@@ -48,7 +48,7 @@ const App = () => {
             </Badge>
           )}
         </div>
-        <div className="ml-auto mr-2 flex flex-row items-center justify-center gap-1.5 ">
+        <div className="mr-2 ml-auto flex flex-row items-center justify-center gap-1.5">
           <Button asChild size="icon" variant="ghost" className="size-7">
             <a
               target="_blank"
@@ -117,8 +117,8 @@ const App = () => {
         )}
         {!activeDatabase && (
           <div className="flex flex-1 flex-col items-center justify-center gap-2 p-2 text-center">
-            <h2 className="text-lg font-bold">No database</h2>
-            <p className="text-xs text-muted-foreground">
+            <h2 className="font-bold text-lg">No database</h2>
+            <p className="text-muted-foreground text-xs">
               You can start playing as soon as you connect a database.
             </p>
             <Button

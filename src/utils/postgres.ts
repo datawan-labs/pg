@@ -24,11 +24,14 @@ export const postgresTransformer = (
   return results
     .filter((result) => result.rows !== undefined)
     .map((result) => {
-      const column = result.fields.reduce((prev, curr) => {
-        const type = columnTransformer[curr.dataTypeID] || "string";
+      const column = result.fields.reduce(
+        (prev, curr) => {
+          const type = columnTransformer[curr.dataTypeID] || "string";
 
-        return { ...prev, [curr.name]: type } as Column<Cell>;
-      }, {} as Column<Cell>);
+          return { ...prev, [curr.name]: type } as Column<Cell>;
+        },
+        {} as Column<Cell>
+      );
 
       const data = result.rows?.map((row) => {
         for (const key in column) {

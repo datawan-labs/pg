@@ -43,9 +43,12 @@ export type ColorVariable = (typeof SHADCN_CLASSES)[number];
 export const getColorScheme = (): Record<ColorVariable, string> => {
   const style = getComputedStyle(document.body);
 
-  return SHADCN_CLASSES.reduce((colors, variable) => {
-    colors[variable] = `hsl(${style.getPropertyValue(variable).trim()})`;
+  return SHADCN_CLASSES.reduce(
+    (colors, variable) => {
+      colors[variable] = `hsl(${style.getPropertyValue(variable).trim()})`;
 
-    return colors;
-  }, {} as Record<ColorVariable, string>);
+      return colors;
+    },
+    {} as Record<ColorVariable, string>
+  );
 };

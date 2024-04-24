@@ -61,7 +61,7 @@ export const QueryHistory = forwardRef<HTMLDivElement, ComponentProps<"div">>(
     return (
       <div
         ref={ref}
-        className={cn("flex flex-col size-full gap-2 overflow-auto", className)}
+        className={cn("flex size-full flex-col gap-2 overflow-auto", className)}
         {...props}
       >
         {reversed.length === 0 && (
@@ -84,7 +84,7 @@ export const QueryHistory = forwardRef<HTMLDivElement, ComponentProps<"div">>(
               {idx !== reversed.length - 1 && (
                 <div
                   className={cn(
-                    "border-[1.5px] flex-1 border-r border-dashed",
+                    "flex-1 border-[1.5px] border-r border-dashed",
                     log.error ? "border-destructive/50" : "border-primary/50"
                   )}
                 />
@@ -92,7 +92,7 @@ export const QueryHistory = forwardRef<HTMLDivElement, ComponentProps<"div">>(
             </div>
             <div className="flex flex-1 flex-col gap-2 overflow-hidden rounded-sm border bg-card p-2 shadow-sm">
               <div className="flex flex-row items-center justify-between gap-2 border-b py-2 font-mono">
-                <div className="text-xs font-bold">{log.createdAt}</div>
+                <div className="font-bold text-xs">{log.createdAt}</div>
                 <Badge>{log.executionTime} ms</Badge>
               </div>
               <div className="flex flex-col gap-2 lg:flex-row">
@@ -100,7 +100,7 @@ export const QueryHistory = forwardRef<HTMLDivElement, ComponentProps<"div">>(
                   <Button
                     size="icon"
                     variant="outline"
-                    className="absolute right-0 top-0 z-10 size-7"
+                    className="absolute top-0 right-0 z-10 size-7"
                     onClick={() => copyQueryToKeyboard(log.statement)}
                   >
                     <IconCopy className="size-3" />
@@ -109,7 +109,7 @@ export const QueryHistory = forwardRef<HTMLDivElement, ComponentProps<"div">>(
                 </div>
                 <ul className="flex-1 space-y-2 lg:border-l lg:pl-2">
                   {log.error && (
-                    <li className="rounded-sm bg-destructive p-2 font-mono text-xs text-destructive-foreground">
+                    <li className="rounded-sm bg-destructive p-2 font-mono text-destructive-foreground text-xs">
                       {log.error}
                     </li>
                   )}
