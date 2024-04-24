@@ -38,7 +38,7 @@ export const useCopyToClipboard = () => {
 
         await navigator.clipboard.writeText(value);
         setState(value);
-      } catch (e) {
+      } catch (_e) {
         oldSchoolCopy(value);
         setState(value);
       }

@@ -47,7 +47,7 @@ export const SchemaERD = forwardRef<HTMLDivElement, ComponentProps<"div">>(
       <div
         ref={ref}
         {...props}
-        className={cn("flex flex-1 flex-col size-full p-0", className)}
+        className={cn("flex size-full flex-1 flex-col p-0", className)}
       >
         <ResizablePanelGroup
           direction="horizontal"

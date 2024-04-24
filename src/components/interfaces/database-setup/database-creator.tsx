@@ -61,7 +61,7 @@ export const DatabaseCreator = () => {
         />
         <FormError>{form.errors?.description}</FormError>
       </FormField>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-muted-foreground text-xs">
         This app is client side apps (no server or login required), and all
         processing is done in the browser and persistent data saved in
         indexedDB, so your data stays private.

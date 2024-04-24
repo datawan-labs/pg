@@ -84,7 +84,7 @@ export const DataViewer = forwardRef<HTMLDivElement, DataViewerProps>(
 
     if (lastHistory?.error)
       return (
-        <div className="flex size-full flex-col items-center justify-center gap-2 bg-muted text-center font-mono text-xs text-destructive">
+        <div className="flex size-full flex-col items-center justify-center gap-2 bg-muted text-center font-mono text-destructive text-xs">
           <div>{lastHistory.error}</div>
           <div>({lastHistory?.executionTime} ms)</div>
         </div>

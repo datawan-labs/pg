@@ -21,7 +21,7 @@ const SchemaTree: FC<{ schema: DatabaseSchema }> = ({ schema }) => (
     <AccordionTrigger className="py-2">
       <div className="flex flex-row items-center gap-x-2">
         <IconTableAlias className="size-4" />
-        <div className="text-sm font-medium">{schema.schema}</div>
+        <div className="font-medium text-sm">{schema.schema}</div>
       </div>
     </AccordionTrigger>
     <AccordionContent className="pb-0">
@@ -55,7 +55,7 @@ const SchemaTree: FC<{ schema: DatabaseSchema }> = ({ schema }) => (
                   className="ml-6 flex flex-row items-center justify-between gap-2"
                 >
                   <div className="flex-1 font-medium">{c.column}</div>
-                  <div className="line-clamp-1 font-mono text-xs font-light">
+                  <div className="line-clamp-1 font-light font-mono text-xs">
                     {c.type} {c.length && `(${c.length})`}
                   </div>
                 </div>

@@ -11,5 +11,5 @@ This app is client side apps (no server or login required) powered by [PGLite](h
 - [x] Query History
 - [x] Mobile Responsiveness
 - [x] Persistent Data
+- [x] Export query result
 - [ ] Import From File
-- [ ] Export query result
