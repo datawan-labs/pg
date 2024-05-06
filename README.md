@@ -12,4 +12,4 @@ This app is client side apps (no server or login required) powered by [PGLite](h
 - [x] Mobile Responsiveness
 - [x] Persistent Data
 - [x] Export query result
-- [ ] Import From File
+- [ ] [Import Data](https://github.com/datawan-labs/pg/issues/6)
