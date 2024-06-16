@@ -12,19 +12,22 @@ import {
   FormError,
   FormFieldset,
 } from "@/components/ui/form";
+import { cn } from "@/utils/classnames";
 
 export const DatabaseCreator = () => {
   const form = useFormState<Pick<Database, "name" | "description">>({
-    name: "",
-    description: "",
+    defaultValue: {
+      name: "",
+      description: "",
+    },
+    validations: {
+      name: (value) => (!value.trim() ? "name cannot be null" : undefined),
+    },
   });
 
   const create = () =>
     form.submit(async (data) => {
-      if (!data.name.trim())
-        return form.setError("name", "name cannot be null");
-
-      modal.setState({ isSubmitting: true });
+      modal.setState({ isConfirming: true });
 
       await useDBStore
         .getState()
@@ -40,24 +43,34 @@ export const DatabaseCreator = () => {
   return (
     <FormFieldset title="Database Metadata">
       <FormField>
-        <FormLabel htmlFor="name">Name</FormLabel>
+        <FormLabel error={!!form.errors?.name} htmlFor="name">
+          Name
+        </FormLabel>
         <Input
           name="name"
           value={form.data?.name}
           disabled={form.isSubmitting}
           placeholder="database name, must be unique"
           onChange={(e) => form.setValue("name", e.target.value)}
+          className={cn(
+            !!form.errors?.name &&
+              "border-destructive focus-visible:ring-destructive"
+          )}
         />
         <FormError>{form.errors?.name}</FormError>
       </FormField>
       <FormField>
-        <FormLabel htmlFor="description">Description</FormLabel>
+        <FormLabel error={!!form.errors?.description} htmlFor="description">Description</FormLabel>
         <Textarea
           name="description"
           disabled={form.isSubmitting}
           value={form.data?.description}
           placeholder="This database is a..."
           onChange={(e) => form.setValue("description", e.target.value)}
+          className={cn(
+            !!form.errors?.description &&
+              "border-destructive focus-visible:ring-destructive"
+          )}
         />
         <FormError>{form.errors?.description}</FormError>
       </FormField>

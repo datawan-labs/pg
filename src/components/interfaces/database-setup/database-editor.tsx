@@ -17,7 +17,9 @@ import {
 export const DatabaseEditor: FC<{
   database: Pick<Database, "name" | "description">;
 }> = ({ database }) => {
-  const form = useFormState<Pick<Database, "description">>(database);
+  const form = useFormState<Pick<Database, "description">>({
+    defaultValue: database,
+  });
 
   const create = () =>
     form.submit(async (data) => {

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "biome check --verbose --apply .",
+    "lint": "biome check --verbose --write .",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -24,33 +24,33 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
-    "@tabler/icons-react": "^3.3.0",
+    "@tabler/icons-react": "^3.6.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "idb-keyval": "^6.2.1",
     "immer": "^10.1.1",
-    "mermaid": "^10.9.0",
+    "mermaid": "^10.9.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-resizable-panels": "^2.0.19",
-    "sonner": "^1.4.41",
+    "sonner": "^1.5.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "vaul": "^0.9.0",
+    "vaul": "^0.9.1",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.7.3",
-    "@types/node": "^20.12.10",
-    "@types/react": "^18.3.1",
+    "@biomejs/biome": "^1.8.1",
+    "@types/node": "^20.14.2",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3",
+    "tailwindcss": "^3.4.4",
     "typescript": "^5.4.5",
-    "vite": "^5.2.11",
+    "vite": "^5.3.1",
     "vite-plugin-preload": "^0.4.0"
   }
 }

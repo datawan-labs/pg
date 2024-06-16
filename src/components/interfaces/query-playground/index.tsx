@@ -116,7 +116,7 @@ export const QueryPlayground = forwardRef<
             <ResizableHandle withHandle direction="vertical" />
           </>
         )}
-        <ResizablePanel order={2}>
+        <ResizablePanel id="main-editor" order={2}>
           <ResizablePanelGroup direction="vertical">
             <ResizablePanel id="query-editor" className="flex">
               <div className="relative flex w-full flex-col gap-y-2 p-2 md:block md:gap-y-0 md:p-0">

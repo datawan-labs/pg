@@ -6,10 +6,17 @@ interface FormState<T = unknown> {
   errors?: Record<keyof T, string>;
 }
 
-export const useFormState = <T extends object>(defaultValue: T) => {
+interface FormParams<T extends object> {
+  defaultValue: T;
+  validations?: Partial<{
+    [K in keyof T]: (value: T[K], data: T) => string | undefined;
+  }>;
+}
+
+export const useFormState = <T extends object>(params: FormParams<T>) => {
   const [form, setForm] = useState<FormState<T>>({
     isSubmitting: false,
-    data: defaultValue,
+    data: params.defaultValue,
   });
 
   /**
@@ -22,34 +29,51 @@ export const useFormState = <T extends object>(defaultValue: T) => {
     }));
 
   /**
-   * reset error for a key
-   */
-  const resetError = (key: keyof T) =>
-    setForm((state) => ({
-      ...state,
-      errors: { ...state.errors, [key]: undefined } as FormState<T>["errors"],
-    }));
-
-  /**
    * set data value
    */
   const setValue = <X extends keyof T>(key: X, value: T[X]) =>
     setForm((state) => ({
       ...state,
       data: { ...state.data, [key]: value } as FormState<T>["data"],
+      errors: {
+        ...state.errors,
+        [key]: params.validations?.[key]?.(value, form.data),
+      } as FormState<T>["errors"],
     }));
 
   /**
    * submit data with async
    */
-  const submit = async (cb: (data: T) => Promise<void>): Promise<void> => {
+  const submit = async (cb: (data: T) => Promise<unknown>): Promise<void> => {
+    let errors: FormState<T>["errors"];
+
+    /**
+     * validate all fields
+     */
+    if (params.validations) {
+      errors = (Object.keys(params.validations) as (keyof T)[]).reduce(
+        (prev, key) => ({
+          ...prev,
+          [key]: params.validations?.[key]?.(form.data?.[key], form.data),
+        }),
+        {} as Partial<FormState<T>["errors"]>
+      ) as FormState<T>["errors"];
+    }
+
+    /**
+     * return if some fields has error
+     */
+    if (errors)
+      for (const key in errors)
+        if (errors[key])
+          return setForm((state) => ({ ...state, errors: errors }));
+
     try {
-      /**
-       * reset error and set submitting to true,
-       * may be we can improve this by checking validation
-       * before this line
-       */
-      setForm((state) => ({ ...state, errors: undefined, isSubmitting: true }));
+      setForm((state) => ({
+        ...state,
+        errors: undefined,
+        isSubmitting: true,
+      }));
 
       /**
        * run callback function
@@ -70,8 +94,7 @@ export const useFormState = <T extends object>(defaultValue: T) => {
     errors: form.errors,
     isSubmitting: form.isSubmitting,
     submit: submit,
-    setValue: setValue,
     setError: setError,
-    resetError: resetError,
+    setValue: setValue,
   };
 };

@@ -19,7 +19,7 @@ export const FormFieldset = forwardRef<
 
 export const FormField = forwardRef<HTMLDivElement, ComponentProps<"div">>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("grid gap-3", className)} {...props} />
+    <div ref={ref} className={cn("grid gap-1", className)} {...props} />
   )
 );
 
@@ -31,7 +31,7 @@ export const FormLabel = forwardRef<
 >(({ className, error, ...props }, ref) => (
   <Label
     ref={ref}
-    className={cn(error && "text-destructive", className)}
+    className={cn(error && "text-destructive", "text-sm", className)}
     {...props}
   />
 ));
@@ -43,7 +43,7 @@ export const FormDescription = forwardRef<
   return (
     <p
       ref={ref}
-      className={cn("text-[0.8rem] text-muted-foreground", className)}
+      className={cn("text-xs text-muted-foreground", className)}
       {...props}
     />
   );

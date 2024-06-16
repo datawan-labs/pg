@@ -72,14 +72,14 @@ interface ModalConfirmArgs {
 
 interface ModalState {
   isOpen: boolean;
-  isSubmitting: boolean;
+  isConfirming: boolean;
   modals: (ModalArgs | ModalConfirmArgs)[];
 }
 
 export const useModalStore = create<ModalState>()(() => ({
   modals: [],
   isOpen: false,
-  isSubmitting: false,
+  isConfirming: false,
 }));
 
 /**
@@ -126,7 +126,7 @@ export const modal = {
         modals: state.modals.slice(0, -1),
       }));
 
-    useModalStore.setState({ isOpen: false, isSubmitting: false });
+    useModalStore.setState({ isOpen: false, isConfirming: false });
 
     /**
      * note that we reset the state in setTimeout
@@ -138,7 +138,7 @@ export const modal = {
   },
 
   closeAll: () => {
-    useModalStore.setState({ isOpen: false, isSubmitting: false });
+    useModalStore.setState({ isOpen: false, isConfirming: false });
 
     /**
      * note that we reset the state in setTimeout
@@ -152,7 +152,7 @@ export const modal = {
   /**
    * updat internal state from outsize word
    */
-  setState: (state: Pick<ModalState, "isSubmitting">) =>
+  setState: (state: Pick<ModalState, "isConfirming">) =>
     useModalStore.setState(state),
 };
 
@@ -164,7 +164,7 @@ export const Modals = () => {
 
   const isOpen = useModalStore((state) => state.isOpen);
 
-  const isSubmitting = useModalStore((state) => state.isSubmitting);
+  const isSubmitting = useModalStore((state) => state.isConfirming);
 
   const modals = useModalStore((state) => state.modals);
 
@@ -179,13 +179,13 @@ export const Modals = () => {
 
     if (activeModal.onConfirm) {
       try {
-        useModalStore.setState({ isSubmitting: true });
+        useModalStore.setState({ isConfirming: true });
 
         await activeModal.onConfirm();
       } catch (error) {
         throw error as Error;
       } finally {
-        useModalStore.setState({ isSubmitting: false });
+        useModalStore.setState({ isConfirming: false });
       }
     }
 
