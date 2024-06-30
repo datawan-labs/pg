@@ -63,12 +63,13 @@ export const QueryPlayground = forwardRef<
 
     const selection = editor.current.getSelection();
 
-    if (!selection) return toast.error("nothing to run");
+    if (!selection)
+      return toast.error("no selected query to run", { duration: 1000 });
 
     const query = editor.current.getModel()?.getValueInRange(selection);
 
     if (!query || query.trim().length === 0)
-      return toast.error("nothing to run");
+      return toast.error("no selected query to run", { duration: 1000 });
 
     useDBStore
       .getState()
@@ -167,7 +168,6 @@ export const QueryPlayground = forwardRef<
                   language="pgsql"
                   onChange={setQuery}
                   className="bg-muted"
-                  defaultValue="SELECT * FROM information_schema.tables"
                   defaultLanguage="pgsql"
                   onMount={(_editor, monaco) => {
                     editor.current = _editor;

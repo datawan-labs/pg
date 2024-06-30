@@ -1,3 +1,4 @@
+import { cn } from "@/utils/classnames";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
 import { modal } from "@/components/ui/modals";
@@ -12,7 +13,6 @@ import {
   FormError,
   FormFieldset,
 } from "@/components/ui/form";
-import { cn } from "@/utils/classnames";
 
 export const DatabaseCreator = () => {
   const form = useFormState<Pick<Database, "name" | "description">>({
@@ -60,7 +60,9 @@ export const DatabaseCreator = () => {
         <FormError>{form.errors?.name}</FormError>
       </FormField>
       <FormField>
-        <FormLabel error={!!form.errors?.description} htmlFor="description">Description</FormLabel>
+        <FormLabel error={!!form.errors?.description} htmlFor="description">
+          Description
+        </FormLabel>
         <Textarea
           name="description"
           disabled={form.isSubmitting}

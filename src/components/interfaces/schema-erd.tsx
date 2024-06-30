@@ -26,9 +26,8 @@ const Mermaid = () => {
   const erd = useDBStore((s) => s.databases[s.active!.name].erd);
 
   useEffect(() => {
-    if (erd) {
+    if (erd)
       mermaid.render("erd-diagram", erd).then(({ svg }) => setERDElement(svg));
-    }
   }, [erd]);
 
   return (
