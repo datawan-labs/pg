@@ -80,6 +80,9 @@ importers:
       react-resizable-panels:
         specifier: ^2.1.4
         version: 2.1.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-zoom-pan-pinch:
+        specifier: ^3.6.1
+        version: 3.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       sonner:
         specifier: ^1.5.0
         version: 1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2351,6 +2354,13 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  react-zoom-pan-pinch@3.6.1:
+    resolution: {integrity: sha512-SdPqdk7QDSV7u/WulkFOi+cnza8rEZ0XX4ZpeH7vx3UZEg7DoyuAy3MCmm+BWv/idPQL2Oe73VoC0EhfCN+sZQ==}
+    engines: {node: '>=8', npm: '>=5'}
+    peerDependencies:
+      react: '*'
+      react-dom: '*'
 
   react@18.3.1:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
@@ -4971,6 +4981,11 @@ snapshots:
       tslib: 2.6.2
     optionalDependencies:
       '@types/react': 18.3.11
+
+  react-zoom-pan-pinch@3.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   react@18.3.1:
     dependencies:

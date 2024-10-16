@@ -34,6 +34,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-resizable-panels": "^2.1.4",
+    "react-zoom-pan-pinch": "^3.6.1",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
