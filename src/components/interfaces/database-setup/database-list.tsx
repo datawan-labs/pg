@@ -50,7 +50,7 @@ const DatabaseListItem: FC<{
     });
 
   return (
-    <div className="flex w-full flex-col gap-y-1 py-1">
+    <div className="flex w-full cursor-pointer flex-col gap-y-1 py-1">
       <div className="flex flex-row items-center justify-between">
         <div className="line-clamp-1 flex-1 font-semibold text-sm">
           <h4>{database.name}</h4>
@@ -135,7 +135,7 @@ export const DatabaseList = () => {
               </p>
             </div>
           </CommandEmpty>
-          <CommandGroup heading="Saved Database">
+          <CommandGroup heading="Saved Databases">
             {Object.keys(dbs).map((name) => (
               <CommandItem
                 key={name}
@@ -153,7 +153,7 @@ export const DatabaseList = () => {
                 value={data.key}
                 onSelect={() => importDatabase(data)}
               >
-                <div className="w-full space-y-1 py-1">
+                <div className="w-full cursor-pointer space-y-1 py-1">
                   <h4 className="line-clamp-1 flex-1 font-semibold text-sm">
                     {data.name}
                   </h4>
