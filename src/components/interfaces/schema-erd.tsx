@@ -44,7 +44,7 @@ const Mermaid = () => {
    * render method return empty svg string.
    */
   useEffect(() => {
-    mermaid.initialize({ theme: "neutral",  });
+    mermaid.initialize({ theme: "neutral" });
     mermaid.render("erd-diagram", erd).then(({ svg }) => setERDElement(svg));
   }, []);
 
