@@ -98,7 +98,7 @@ const Mermaid = () => {
                   <IconPlus className="size-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>zoom in</TooltipContent>
+              <TooltipContent>Zoom In</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -111,7 +111,7 @@ const Mermaid = () => {
                   <IconMinus className="size-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>zoom out</TooltipContent>
+              <TooltipContent>Zoom Out</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -124,7 +124,7 @@ const Mermaid = () => {
                   <IconZoomReset className="size-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>reset</TooltipContent>
+              <TooltipContent>Reset</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -137,7 +137,7 @@ const Mermaid = () => {
                   <IconFocusCentered className="size-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>center</TooltipContent>
+              <TooltipContent>Center</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -150,7 +150,7 @@ const Mermaid = () => {
                   <IconDownload className="size-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>center</TooltipContent>
+              <TooltipContent>Export</TooltipContent>
             </Tooltip>
           </div>
         </>
