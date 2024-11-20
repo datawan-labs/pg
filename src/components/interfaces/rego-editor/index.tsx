@@ -24,7 +24,6 @@ export const RegoEditor = forwardRef<HTMLDivElement, ComponentProps<"div">>(
 
     const query = useDBStore((s) => s.databases[s.active!.name].rego);
     const evaluated = useDBStore((s) => s.databases[s.active!.name].evaluated);
-    console.log({ evaluated });
 
     const setQuery = (rego: string | undefined) =>
       useDBStore.setState((s) => {
@@ -133,10 +132,10 @@ export const RegoEditor = forwardRef<HTMLDivElement, ComponentProps<"div">>(
                   <ResizableHandle withHandle direction="vertical" />
                   <ResizablePanel id="data-viewer" className="flex">
                     <CodeEditor
-                      value={JSON.stringify(evaluated, null, 2)}
-                      language="json"
+                      value={evaluated}
+                      language="pgsql"
                       className="bg-muted"
-                      defaultLanguage="json"
+                      defaultLanguage="pgsql"
                     />
                   </ResizablePanel>
                 </>

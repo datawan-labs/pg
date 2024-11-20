@@ -74,7 +74,7 @@ export interface Database {
 
   rego?: string;
 
-  evaluated?: Record<string, unknown>;
+  evaluated?: string;
 
   datagrid?: DataGridValue<Cell>[];
 }
@@ -100,6 +100,19 @@ interface State {
 
   reload: () => Promise<void>;
 }
+
+// NOTE(sr):
+// 1. "conditions" and "query" is a must
+// 2. we need the rego.v1 import because the Preview API has no "v1" flag
+// 3. we cannot use the condensed ucast format just yet -- the builtin doesn't
+//    know how to expand that
+const defaultRego = `package conditions
+import rego.v1
+filter := {"type": "compound", "operator": "and", "value": [
+	{"type": "field", "operator": "eq", "field": "name", "value": "bob"},
+	{"type": "field", "operator": "gt", "field": "salary", "value": 50000},
+]}
+query := ucast.as_sql(filter, "postgres", {})`;
 
 export const useDBStore = create<State>()(
   persist(
@@ -129,7 +142,7 @@ export const useDBStore = create<State>()(
             description: data.description,
             createdAt: new Date().toLocaleString(),
             query: "SELECT * FROM information_schema.tables",
-            rego: 'package conditions\nor contains {"name": "alice"}\n',
+            rego: defaultRego,
             history: [],
             erd: erd,
             schema: schema,
@@ -174,7 +187,7 @@ export const useDBStore = create<State>()(
             description: data.description,
             createdAt: new Date().toLocaleString(),
             query: "SELECT * FROM information_schema.tables",
-            rego: 'package conditions\nor contains {"name": "alice"}\n',
+            rego: defaultRego,
             history: [],
             erd: erd,
             schema: schema,
@@ -213,24 +226,36 @@ export const useDBStore = create<State>()(
       evaluate: async (rego) => {
         const connection = get().active!;
 
+        // Playground. Needs no backend but has no ucast builtins.
+        // const req = {
+        //   input: {},
+        //   data: {},
+        //   rego_modules: {
+        //     "main.rego": rego,
+        //   },
+        //   rego_version: 1,
+        // };
+        // const resp = await fetch("https://play.openpolicyagent.org/v1/data", {
+        //   method: "POST",
+        //   body: JSON.stringify(req),
+        // });
+
+        // EOPA Preview API
         const req = {
           input: {},
           data: {},
           rego_modules: {
             "main.rego": rego,
           },
-          rego_version: 1,
         };
-        const resp = await fetch("https://play.openpolicyagent.org/v1/data", {
+        const resp = await fetch("/v0/preview/conditions", {
           method: "POST",
           body: JSON.stringify(req),
         });
         const result = await resp.json();
-        // {"result":[{"expressions":[{"value":{"or":[{}]},"text":"data.conditions","location":{"row":1,"col":1}}]}],"pretty":"{\n  \"or\": [\n    {}\n  ]\n}\n","value":"","input":null,"data":null,"eval_time":42921,"trace":null}
         set((state) => {
           state.databases[connection.name].rego = rego;
-          state.databases[connection.name].evaluated =
-            result?.result?.[0]?.expressions?.[0]?.value;
+          state.databases[connection.name].evaluated = result?.result?.query;
         });
         return result;
       },
@@ -241,10 +266,13 @@ export const useDBStore = create<State>()(
         const startTime = performance.now();
         const createdAt = new Date().toLocaleString();
 
+        const evaluated = get().databases[connection.name].evaluated;
+
         try {
           if (!query || !query.trim()) throw new Error(`no query to run`);
+          const query0 = query + " " + evaluated;
 
-          const result = await connection.postgres.exec(query);
+          const result = await connection.postgres.exec(query0);
 
           set((state) => {
             state.databases[connection.name].query = query;
