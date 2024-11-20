@@ -110,11 +110,13 @@ interface State {
 //    know how to expand that
 const defaultRego = `package conditions
 import rego.v1
+
 filter := {"type": "compound", "operator": "and", "value": [
-	{"type": "field", "operator": "eq", "field": "name", "value": "bob"},
-	{"type": "field", "operator": "gt", "field": "salary", "value": 50000},
-]}
-query := ucast.as_sql(filter, "postgres", {})`;
+	{"type": "field", "operator": "ne", "field": "name", "value": "skateboard"},
+	{"type": "field", "operator": "lte", "field": "price", "value": 200}]}
+
+query := ucast.as_sql(filter, "postgres", {})
+`;
 
 export const useDBStore = create<State>()(
   persist(
