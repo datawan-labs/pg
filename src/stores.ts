@@ -74,6 +74,8 @@ export interface Database {
 
   rego?: string;
 
+  input?: Record<string, unknown>;
+
   evaluated?: string;
 
   datagrid?: DataGridValue<Cell>[];
@@ -240,9 +242,11 @@ export const useDBStore = create<State>()(
         //   body: JSON.stringify(req),
         // });
 
+        const input = get().databases[connection.name].input;
+
         // EOPA Preview API
         const req = {
-          input: {},
+          input,
           data: {},
           rego_modules: {
             "main.rego": rego,

@@ -21,6 +21,7 @@ import {
 export const RegoEditor = forwardRef<HTMLDivElement, ComponentProps<"div">>(
   ({ className, ...props }, ref) => {
     const editor = useRef<Parameters<OnMount>["0"]>();
+    const inputEditor = useRef<Parameters<OnMount>["0"]>();
 
     const query = useDBStore((s) => s.databases[s.active!.name].rego);
     const evaluated = useDBStore((s) => s.databases[s.active!.name].evaluated);
@@ -28,6 +29,11 @@ export const RegoEditor = forwardRef<HTMLDivElement, ComponentProps<"div">>(
     const setQuery = (rego: string | undefined) =>
       useDBStore.setState((s) => {
         s.databases[s.active!.name].rego = rego;
+      });
+
+    const setInput = (input: string | undefined) =>
+      useDBStore.setState((s) => {
+        s.databases[s.active!.name].input = input ? JSON.parse(input) : {};
       });
 
     const evalQuery = () =>
@@ -119,6 +125,25 @@ export const RegoEditor = forwardRef<HTMLDivElement, ComponentProps<"div">>(
                         monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
                         runSelectedQuery,
                       );
+                    }}
+                    options={{
+                      folding: true,
+                      lineNumbers: "on",
+                    }}
+                  />
+                </div>
+              </ResizablePanel>
+              <ResizableHandle withHandle direction="vertical" />
+              <ResizablePanel id="input-editor" className="flex">
+                <div className="relative flex w-full flex-col gap-y-2 p-2 md:block md:gap-y-0 md:p-0">
+                  <CodeEditor
+                    value="{}"
+                    language="json"
+                    onChange={setInput}
+                    className="bg-muted"
+                    defaultLanguage="json"
+                    onMount={(editor) => {
+                      inputEditor.current = editor;
                     }}
                     options={{
                       folding: true,
