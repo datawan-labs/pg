@@ -19,7 +19,9 @@ import {
   IconHierarchy2,
   IconTableColumn,
   IconBrandGithub,
+  IconFilterEdit,
 } from "@tabler/icons-react";
+import { RegoEditor } from "./components/interfaces/rego-editor";
 
 const App = () => {
   const isDesktop = useIsDesktop();
@@ -87,6 +89,11 @@ const App = () => {
                 <IconTableColumn className="size-5" />
               </NavigationItem>
             </Tabs.Trigger>
+            <Tabs.Trigger value="rego" asChild>
+              <NavigationItem tooltip="Rego" active={activeMenu === "Rego"}>
+                <IconFilterEdit className="size-5" />
+              </NavigationItem>
+            </Tabs.Trigger>
             <Tabs.Trigger value="history" asChild>
               <NavigationItem
                 tooltip="Query History"
@@ -106,6 +113,9 @@ const App = () => {
           <main className="flex flex-1 flex-col overflow-hidden">
             <Tabs.Content value="playground" asChild>
               <QueryPlayground />
+            </Tabs.Content>
+            <Tabs.Content value="rego" asChild>
+              <RegoEditor />
             </Tabs.Content>
             <Tabs.Content value="history" asChild>
               <QueryHistory />

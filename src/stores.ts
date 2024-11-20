@@ -72,6 +72,10 @@ export interface Database {
 
   query?: string;
 
+  rego?: string;
+
+  evaluated?: Record<string, unknown>;
+
   datagrid?: DataGridValue<Cell>[];
 }
 
@@ -91,6 +95,8 @@ interface State {
   connect: (name: string) => Promise<void>;
 
   execute: (query: string) => Promise<Results[] | undefined>;
+
+  evaluate: (rego: string) => Promise<Record<string, any> | undefined>;
 
   reload: () => Promise<void>;
 }
@@ -123,6 +129,7 @@ export const useDBStore = create<State>()(
             description: data.description,
             createdAt: new Date().toLocaleString(),
             query: "SELECT * FROM information_schema.tables",
+            rego: 'package conditions\nor contains {"name": "alice"}\n',
             history: [],
             erd: erd,
             schema: schema,
@@ -167,6 +174,7 @@ export const useDBStore = create<State>()(
             description: data.description,
             createdAt: new Date().toLocaleString(),
             query: "SELECT * FROM information_schema.tables",
+            rego: 'package conditions\nor contains {"name": "alice"}\n',
             history: [],
             erd: erd,
             schema: schema,
@@ -200,6 +208,31 @@ export const useDBStore = create<State>()(
           state.databases[name].erd = erd;
           state.databases[name].schema = schema;
         });
+      },
+
+      evaluate: async (rego) => {
+        const connection = get().active!;
+
+        const req = {
+          input: {},
+          data: {},
+          rego_modules: {
+            "main.rego": rego,
+          },
+          rego_version: 1,
+        };
+        const resp = await fetch("https://play.openpolicyagent.org/v1/data", {
+          method: "POST",
+          body: JSON.stringify(req),
+        });
+        const result = await resp.json();
+        // {"result":[{"expressions":[{"value":{"or":[{}]},"text":"data.conditions","location":{"row":1,"col":1}}]}],"pretty":"{\n  \"or\": [\n    {}\n  ]\n}\n","value":"","input":null,"data":null,"eval_time":42921,"trace":null}
+        set((state) => {
+          state.databases[connection.name].rego = rego;
+          state.databases[connection.name].evaluated =
+            result?.result?.[0]?.expressions?.[0]?.value;
+        });
+        return result;
       },
 
       execute: async (query) => {
@@ -266,6 +299,6 @@ export const useDBStore = create<State>()(
       name: "zustand-store",
       storage: createJSONStorage(() => zustandIDBStorage),
       partialize: (state) => ({ databases: state.databases }),
-    }
-  )
+    },
+  ),
 );
