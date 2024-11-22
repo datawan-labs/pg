@@ -96,7 +96,7 @@ interface State {
 
   connect: (name: string) => Promise<void>;
 
-  execute: (query: string) => Promise<Results[] | undefined>;
+  execute: (query: string, filter?: boolean) => Promise<Results[] | undefined>;
 
   evaluate: (rego: string) => Promise<Record<string, any> | undefined>;
 
@@ -266,7 +266,7 @@ export const useDBStore = create<State>()(
         return result;
       },
 
-      execute: async (query) => {
+      execute: async (query, filter) => {
         const connection = get().active!;
 
         const startTime = performance.now();
@@ -276,7 +276,7 @@ export const useDBStore = create<State>()(
 
         try {
           if (!query || !query.trim()) throw new Error(`no query to run`);
-          const query0 = query + " " + evaluated;
+          const query0 = filter ? query + " " + evaluated : query;
 
           const result = await connection.postgres.exec(query0);
 

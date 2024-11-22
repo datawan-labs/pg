@@ -58,6 +58,14 @@ export const QueryPlayground = forwardRef<
       .then(() => toast.success("completed", { duration: 500 }))
       .catch((err) => toast.error((err as Error).message, { duration: 500 }));
 
+  const runAllQueryFiltered = () =>
+    query &&
+    useDBStore
+      .getState()
+      .execute(query, true)
+      .then(() => toast.success("completed", { duration: 500 }))
+      .catch((err) => toast.error((err as Error).message, { duration: 500 }));
+
   const runSelectedQuery = () => {
     if (!editor.current) return;
 
@@ -138,7 +146,7 @@ export const QueryPlayground = forwardRef<
                   <div className="right-4 bottom-2 z-50 flex items-center gap-0.5 md:absolute">
                     <Button
                       size="xs"
-                      onClick={runAllQuery}
+                      onClick={runAllQueryFiltered}
                       className="gap-1 text-xs md:rounded-r-none"
                       disabled={query == undefined || query.trim().length === 0}
                     >
@@ -156,6 +164,9 @@ export const QueryPlayground = forwardRef<
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
+                        <DropdownMenuItem onClick={runAllQuery}>
+                          Run Unfiltered
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={runSelectedQuery}>
                           Run Selection
                         </DropdownMenuItem>
@@ -174,7 +185,7 @@ export const QueryPlayground = forwardRef<
 
                     editor.current.addCommand(
                       monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
-                      runSelectedQuery
+                      runSelectedQuery,
                     );
                   }}
                   options={{
