@@ -259,6 +259,11 @@ export const useDBStore = create<State>()(
           body: JSON.stringify(req),
         });
         const result = await resp.json();
+
+        if ("code" in result) {
+          throw new Error(result?.message);
+        }
+
         set((state) => {
           state.databases[connection.name].rego = rego;
           state.databases[connection.name].evaluated = result?.result?.query;
