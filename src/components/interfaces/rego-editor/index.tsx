@@ -27,7 +27,12 @@ export const RegoEditor = forwardRef<HTMLDivElement, ComponentProps<"div">>(
 
     const setInput = (input: string | undefined) =>
       useDBStore.setState((s) => {
-        s.databases[s.active!.name].input = input ? JSON.parse(input) : {};
+        try {
+          s.databases[s.active!.name].input = input ? JSON.parse(input) : {};
+        } catch (err) {
+          // NOTE(sr): too noisy, we don't debounce setInput; better ignore parse errors
+          // toast.error((err as Error).message, { duration: 2000 });
+        }
       });
 
     const evalQuery = () =>

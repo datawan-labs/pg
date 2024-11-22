@@ -30,6 +30,7 @@ export interface QueryResult {
 export interface QueryHistory {
   error?: string;
   statement: string;
+  statementWithFilter?: string;
   createdAt?: string;
   executionTime?: number; // ms
   results?: QueryResult[];
@@ -281,7 +282,7 @@ export const useDBStore = create<State>()(
 
         try {
           if (!query || !query.trim()) throw new Error(`no query to run`);
-          const query0 = filter ? query + " " + evaluated : query;
+          const query0 = filter ? combine(query, evaluated) : query;
 
           const result = await connection.postgres.exec(query0);
 
@@ -293,6 +294,7 @@ export const useDBStore = create<State>()(
 
             state.databases[connection.name].history.push({
               statement: query,
+              statementWithFilter: query0,
               createdAt: createdAt,
               executionTime: performance.now() - startTime,
               results: result.map((r) => ({
@@ -341,3 +343,13 @@ export const useDBStore = create<State>()(
     },
   ),
 );
+
+function combine(existing: string, filter: string | undefined): string {
+  if (!filter) return existing;
+
+  const sansWhere = filter.slice(6);
+  if (/where/i.test(existing)) {
+    return existing + " AND " + sansWhere;
+  }
+  return existing + " WHERE " + sansWhere;
+}
