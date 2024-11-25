@@ -18,7 +18,14 @@ export const RegoEditor = forwardRef<HTMLDivElement, ComponentProps<"div">>(
     const inputEditor = useRef<Parameters<OnMount>["0"]>();
 
     const query = useDBStore((s) => s.databases[s.active!.name].rego);
-    const evaluated = useDBStore((s) => s.databases[s.active!.name].evaluated);
+    const input = useDBStore((s) =>
+      JSON.stringify(s.databases[s.active!.name].input, null, 2),
+    );
+    const evaluated = useDBStore((s) => {
+      const res = s.databases[s.active!.name].evaluated;
+      if (!res) return;
+      return JSON.stringify(res, null, 2);
+    });
 
     const setQuery = (rego: string | undefined) =>
       useDBStore.setState((s) => {
@@ -95,7 +102,7 @@ export const RegoEditor = forwardRef<HTMLDivElement, ComponentProps<"div">>(
               <ResizablePanel id="input-editor" className="flex">
                 <div className="relative flex w-full flex-col gap-y-2 p-2 md:block md:gap-y-0 md:p-0">
                   <CodeEditor
-                    value="{}"
+                    value={input}
                     language="json"
                     onChange={setInput}
                     className="bg-muted"
@@ -113,12 +120,12 @@ export const RegoEditor = forwardRef<HTMLDivElement, ComponentProps<"div">>(
               {evaluated && (
                 <>
                   <ResizableHandle withHandle direction="vertical" />
-                  <ResizablePanel id="data-viewer" className="flex">
+                  <ResizablePanel id="eval-viewer" className="flex">
                     <CodeEditor
                       value={evaluated}
-                      language="pgsql"
+                      language="json"
                       className="bg-muted"
-                      defaultLanguage="pgsql"
+                      defaultLanguage="json"
                     />
                   </ResizablePanel>
                 </>

@@ -79,6 +79,8 @@ export interface Database {
 
   evaluated?: string;
 
+  filter?: string;
+
   datagrid?: DataGridValue<Cell>[];
 }
 
@@ -105,19 +107,18 @@ interface State {
 }
 
 // NOTE(sr):
-// 1. "conditions" and "query" is a must
+// 1. "package conditions" and "query" is a must
 // 2. we need the rego.v1 import because the Preview API has no "v1" flag
-// 3. we cannot use the condensed ucast format just yet -- the builtin doesn't
-//    know how to expand that
 const defaultRego = `package conditions
 import rego.v1
 
-filter := {"type": "compound", "operator": "and", "value": [
-	{"type": "field", "operator": "ne", "field": "name", "value": "skateboard"},
-	{"type": "field", "operator": "lte", "field": "price", "value": 200}]}
+filter.or contains {"name": {"ne": "Blender"}} if input.user == "bart"
+filter.or contains {"price": {"lte": 60}} if input.budget == "low"
 
-query := ucast.as_sql(filter, "postgres", {})
+expanded := ucast.expand(filter)
+query := ucast.as_sql(expanded, "postgres", {})
 `;
+const defaultInput = { user: "bart", budget: "low" };
 
 export const useDBStore = create<State>()(
   persist(
@@ -148,6 +149,7 @@ export const useDBStore = create<State>()(
             createdAt: new Date().toLocaleString(),
             query: "SELECT * FROM information_schema.tables",
             rego: defaultRego,
+            input: defaultInput,
             history: [],
             erd: erd,
             schema: schema,
@@ -193,6 +195,7 @@ export const useDBStore = create<State>()(
             createdAt: new Date().toLocaleString(),
             query: "SELECT * FROM information_schema.tables",
             rego: defaultRego,
+            input: defaultInput,
             history: [],
             erd: erd,
             schema: schema,
@@ -267,7 +270,8 @@ export const useDBStore = create<State>()(
 
         set((state) => {
           state.databases[connection.name].rego = rego;
-          state.databases[connection.name].evaluated = result?.result?.query;
+          state.databases[connection.name].evaluated = result?.result;
+          state.databases[connection.name].filter = result?.result?.query;
         });
         return result;
       },
@@ -278,11 +282,11 @@ export const useDBStore = create<State>()(
         const startTime = performance.now();
         const createdAt = new Date().toLocaleString();
 
-        const evaluated = get().databases[connection.name].evaluated;
+        const evalFilter = get().databases[connection.name].filter;
 
         try {
           if (!query || !query.trim()) throw new Error(`no query to run`);
-          const query0 = filter ? combine(query, evaluated) : query;
+          const query0 = filter ? combine(query, evalFilter) : query;
 
           const result = await connection.postgres.exec(query0);
 
