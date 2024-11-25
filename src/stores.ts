@@ -347,6 +347,9 @@ export const useDBStore = create<State>()(
 function combine(existing: string, filter: string | undefined): string {
   if (!filter) return existing;
 
+  existing = existing.trimEnd();
+  if (existing.endsWith(";")) existing = existing.slice(0, -1);
+
   const sansWhere = filter.slice(6);
   if (/where/i.test(existing)) {
     return existing + " AND " + sansWhere;
