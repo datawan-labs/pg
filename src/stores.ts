@@ -112,13 +112,21 @@ interface State {
 const defaultRego = `package conditions
 import rego.v1
 
-filter.or contains {"name": {"ne": "Blender"}} if input.user == "bart"
-filter.or contains {"price": {"lte": 60}} if input.budget == "low"
+filter["users.name"] := input.user
+filter["products.price"] := {"lte": 500} if input.budget == "low"
 
 expanded := ucast.expand(filter)
-query := ucast.as_sql(expanded, "postgres", {})
+query := ucast.as_sql(expanded, "postgres", {"users": {"$self": "u"}, "products": {"$self": "p"}})
 `;
-const defaultInput = { user: "bart", budget: "low" };
+const defaultInput = { user: "Emma Clark", budget: "low" };
+
+/* NOTE(sr): the example rego above is meant to go with this SQL statement:
+select u.name as user, p.name as product, p.price
+from orders o
+inner join users u on o.user_id = u.id
+inner join order_items i on o.order_id = i.order_id
+inner join products p on i.product_id = p.product_id
+*/
 
 export const useDBStore = create<State>()(
   persist(
