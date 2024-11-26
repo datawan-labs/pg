@@ -17,7 +17,6 @@ import {
   IconLogs,
   IconDatabase,
   IconHierarchy2,
-  IconTableColumn,
   IconBrandGithub,
   IconFilterEdit,
 } from "@tabler/icons-react";
@@ -28,13 +27,13 @@ const App = () => {
 
   const activeDatabase = useDBStore((state) => state.active);
 
-  const [activeMenu, setActiveMenu] = useState("playground");
+  const [activeMenu, setActiveMenu] = useState("data filtering");
 
   const openDatabaseMenu = () =>
     modal.open({
       title: "Databases",
       children: <DatabaseList />,
-      description: "It start with postgresql and ended with postgresql",
+      description: "It started with postgresql and ended with postgresql",
     });
 
   return (
@@ -74,23 +73,18 @@ const App = () => {
       </Header>
       <Tabs.Root
         value={activeMenu}
-        defaultValue="playground"
+        defaultValue="data filtering"
         onValueChange={setActiveMenu}
         orientation={isDesktop ? "vertical" : "horizontal"}
         className="flex h-full flex-1 flex-col-reverse overflow-hidden md:flex-row"
       >
         <Tabs.List asChild>
           <Navigation>
-            <Tabs.Trigger value="playground" asChild>
+            <Tabs.Trigger value="data filtering" asChild>
               <NavigationItem
-                tooltip="Playground"
-                active={activeMenu === "playground"}
+                tooltip="Rego"
+                active={activeMenu === "data filtering"}
               >
-                <IconTableColumn className="size-5" />
-              </NavigationItem>
-            </Tabs.Trigger>
-            <Tabs.Trigger value="rego" asChild>
-              <NavigationItem tooltip="Rego" active={activeMenu === "Rego"}>
                 <IconFilterEdit className="size-5" />
               </NavigationItem>
             </Tabs.Trigger>
@@ -111,10 +105,7 @@ const App = () => {
         </Tabs.List>
         {activeDatabase && (
           <main className="flex flex-1 flex-col overflow-hidden">
-            <Tabs.Content value="playground" asChild>
-              <QueryPlayground />
-            </Tabs.Content>
-            <Tabs.Content value="rego" asChild>
+            <Tabs.Content value="data filtering" asChild>
               <RegoEditor />
             </Tabs.Content>
             <Tabs.Content value="history" asChild>

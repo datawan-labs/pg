@@ -77,6 +77,8 @@ export interface Database {
 
   input?: Record<string, unknown>;
 
+  data?: Record<string, unknown>;
+
   evaluated?: string;
 
   filter?: string;
@@ -99,7 +101,11 @@ interface State {
 
   connect: (name: string) => Promise<void>;
 
-  execute: (query: string, filter?: boolean) => Promise<Results[] | undefined>;
+  execute: (
+    query: string,
+    rego?: string,
+    filter?: boolean,
+  ) => Promise<Results[] | undefined>;
 
   evaluate: (rego: string) => Promise<Record<string, any> | undefined>;
 
@@ -241,27 +247,12 @@ export const useDBStore = create<State>()(
 
       evaluate: async (rego) => {
         const connection = get().active!;
-
-        // Playground. Needs no backend but has no ucast builtins.
-        // const req = {
-        //   input: {},
-        //   data: {},
-        //   rego_modules: {
-        //     "main.rego": rego,
-        //   },
-        //   rego_version: 1,
-        // };
-        // const resp = await fetch("https://play.openpolicyagent.org/v1/data", {
-        //   method: "POST",
-        //   body: JSON.stringify(req),
-        // });
-
-        const input = get().databases[connection.name].input;
+        const { input, data } = get().databases[connection.name];
 
         // EOPA Preview API
         const req = {
           input,
-          data: {},
+          data,
           rego_modules: {
             "main.rego": rego,
           },
@@ -284,13 +275,13 @@ export const useDBStore = create<State>()(
         return result;
       },
 
-      execute: async (query, filter) => {
+      execute: async (query, rego, filter) => {
         const connection = get().active!;
 
         const startTime = performance.now();
         const createdAt = new Date().toLocaleString();
 
-        const evalFilter = get().databases[connection.name].filter;
+        const evalFilter = rego && (await get().evaluate(rego))?.result?.query;
 
         try {
           if (!query || !query.trim()) throw new Error(`no query to run`);
