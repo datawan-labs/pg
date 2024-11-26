@@ -1,0 +1,21 @@
+services:
+  playground:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - eopa
+
+  eopa:
+    image: ghcr.io/styrainc/enterprise-opa:edge
+    pull_policy: always # better when using :edge
+    ports:
+      - "8181:8181"
+    command:
+      - run
+      - --server
+      - --addr=:8181
+      - --log-level=debug
+      - --set=preview.enable=true
+    environment:
+      EOPA_LICENSE_KEY: ${EOPA_LICENSE_KEY}

@@ -1,0 +1,15 @@
+{
+	debug
+}
+:3000 {
+	# proxy API requests to EOPA (managed via docker-compose)
+	handle /v0/* {
+		reverse_proxy http://eopa:8181
+	}
+
+	handle {
+		root * /usr/share/caddy
+		try_files {path} /
+		file_server
+	}
+}
